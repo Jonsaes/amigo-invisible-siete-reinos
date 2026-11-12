@@ -1,0 +1,112 @@
+{
+  "rules": {
+    "ai": {
+      "2026": {
+        "estado": {
+          ".read": true,
+          ".write": "root.child('ai/2026/maestres/'+auth.uid).exists()"
+        },
+        "maestres": {
+          "$uid": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid && newData.val() === 'CAMBIA-ESTA-CLAVE'"
+          }
+        },
+        "contador": {
+          ".read": true,
+          "$casa": {
+            ".write": "auth != null && (newData.val() === (data.exists() ? data.val() : 0) + 1 || root.child('ai/2026/maestres/'+auth.uid).exists())",
+            ".validate": "newData.isNumber() && newData.val() >= 0"
+          }
+        },
+        "publico": {
+          ".read": true,
+          "$pid": {
+            ".write": "auth != null && ((!data.exists() && newData.exists() && root.child('ai/2026/estado/fase').val() !== 'sellado' && root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid) || root.child('ai/2026/maestres/'+auth.uid).exists())",
+            ".validate": "!newData.exists() || (newData.hasChildren(['nombre','casa']) && newData.child('nombre').isString() && newData.child('nombre').val().length >= 2 && newData.child('nombre').val().length <= 30 && newData.child('casa').isString())",
+            "nDeseos": {
+              ".write": "auth != null && root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid",
+              ".validate": "newData.isNumber()"
+            }
+          }
+        },
+        "privado": {
+          "$pid": {
+            ".read": "auth != null && data.child('uid').val() === auth.uid",
+            ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || (data.exists() && newData.exists() && newData.child('codigo').val() === data.child('codigo').val() && newData.child('uid').val() === auth.uid) || (!newData.exists() && root.child('ai/2026/maestres/'+auth.uid).exists()))",
+            ".validate": "!newData.exists() || (newData.hasChildren(['codigo','uid']) && newData.child('codigo').isString() && newData.child('uid').isString())",
+            "codigo": {
+              ".write": "root.child('ai/2026/maestres/'+auth.uid).exists()"
+            }
+          }
+        },
+        "codigos": {
+          "$codigo": {
+            ".read": "auth != null",
+            ".write": "auth != null && (!data.exists() || root.child('ai/2026/maestres/'+auth.uid).exists())",
+            ".validate": "newData.isString()"
+          }
+        },
+        "uids": {
+          "$uid": {
+            ".read": "$uid === auth.uid",
+            ".write": "$uid === auth.uid && (!newData.exists() || root.child('ai/2026/privado/'+newData.val()+'/uid').val() === auth.uid)"
+          }
+        },
+        "deseos": {
+          "$pid": {
+            ".read": "auth != null && (root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid || (root.child('ai/2026/uids/'+auth.uid).exists() && root.child('ai/2026/asignaciones/'+root.child('ai/2026/uids/'+auth.uid).val()).val() === $pid))",
+            ".write": "auth != null && (root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid || (!newData.exists() && root.child('ai/2026/maestres/'+auth.uid).exists()))",
+            "$did": {
+              ".validate": "!newData.exists() || (newData.hasChildren(['titulo']) && newData.child('titulo').isString() && newData.child('titulo').val().length <= 120 && (!newData.child('img').exists() || (newData.child('img').isString() && newData.child('img').val().length <= 400000)))"
+            }
+          }
+        },
+        "lotengo": {
+          ".write": "!newData.exists() && root.child('ai/2026/maestres/'+auth.uid).exists()",
+          "$pid": {
+            ".read": "auth != null && root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid",
+            ".write": "auth != null && (root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid || (!newData.exists() && root.child('ai/2026/maestres/'+auth.uid).exists()))"
+          }
+        },
+        "asignaciones": {
+          ".write": "root.child('ai/2026/maestres/'+auth.uid).exists()",
+          "$pid": {
+            ".read": "auth != null && root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid",
+            ".validate": "newData.isString()"
+          }
+        },
+        "cuervos": {
+          ".read": "root.child('ai/2026/maestres/'+auth.uid).exists()",
+          "$pid": {
+            ".read": "auth != null && (root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid || root.child('ai/2026/maestres/'+auth.uid).exists())",
+            ".write": "auth != null && ((root.child('ai/2026/uids/'+auth.uid).exists() && root.child('ai/2026/asignaciones/'+root.child('ai/2026/uids/'+auth.uid).val()).val() === $pid) || ((!newData.exists()) && (root.child('ai/2026/privado/'+$pid+'/uid').val() === auth.uid || root.child('ai/2026/maestres/'+auth.uid).exists())))",
+            ".validate": "!newData.exists() || (newData.hasChildren(['ts','texto']) && newData.child('texto').isString() && newData.child('texto').val().length <= 200)"
+          }
+        },
+        "larganoche": {
+          ".read": "auth != null",
+          ".write": "root.child('ai/2026/maestres/'+auth.uid).exists()"
+        },
+        "directo": {
+          ".read": "auth != null",
+          ".write": "root.child('ai/2026/maestres/'+auth.uid).exists()",
+          "respuestas": {
+            "$i": {
+              "$casa": {
+                ".write": "auth != null && !data.exists() && root.child('ai/2026/publico/'+root.child('ai/2026/uids/'+auth.uid).val()+'/casa').val() === $casa",
+                ".validate": "newData.hasChildren(['opcion','pid','ts']) && newData.child('opcion').isNumber()"
+              }
+            }
+          },
+          "apuestas": {
+            "$casa": {
+              ".write": "auth != null && !data.exists() && root.child('ai/2026/publico/'+root.child('ai/2026/uids/'+auth.uid).val()+'/casa').val() === $casa",
+              ".validate": "newData.isNumber() && newData.val() >= 0"
+            }
+          }
+        }
+      }
+    }
+  }
+}

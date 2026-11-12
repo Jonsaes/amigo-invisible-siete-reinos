@@ -1,0 +1,3227 @@
+{
+ "_ayuda": [
+  "Este archivo es el banco de retos de La Larga Noche. Vive dentro de la carpeta de funciones de Netlify: el navegador nunca lo ve.",
+  "capitulos: el orden en que aparecen. gema = color de respaldo de la gema (la imagen real es img/gema-<id>.png).",
+  "Campos comunes de cada reto: id (único, sin espacios), capitulo, tipo, dificultad (escudero | caballero | maestre), pregunta,",
+  "  explicacion (opcional, una línea tras responder), sobremesa (true = reservado para el directo del 5 de enero), ejemplo (true = plantilla para cambiar).",
+  "sobremesa: true → el reto NO sale durante el mes; se reserva para el concurso en directo del 5 de enero (solo tipos con opciones: test, emojis, foto, silueta). Salen en el orden del archivo; el último lleva la apuesta.",
+  "IMÁGENES: guarda el archivo en la carpeta retos/ (al lado de img/) y escribe su nombre en el reto. Ejemplos literales:",
+  "  test con foto:   \"tipo\": \"test\",    \"imagen\": \"retos/sevilla.jpg\",  \"pregunta\": \"¿Qué lugar de Poniente se rodó aquí?\", \"opciones\": [...], \"correcta\": 2",
+  "  foto borrosa:    \"tipo\": \"foto\",    \"imagen\": \"retos/jon.jpg\",      \"pregunta\": \"¿Quién aparece?\", \"opciones\": [...], \"correcta\": 0",
+  "  silueta:         \"tipo\": \"silueta\", \"imagen\": \"retos/lobo.png\",     \"pregunta\": \"¿Qué animal es?\", \"opciones\": [...], \"correcta\": 1   (PNG con fondo transparente)",
+  "  Formatos: jpg o png. Tamaño recomendado: 1200 px de ancho como mucho (más grande solo tarda en cargar). Si la imagen no existe, el reto sale sin ella.",
+  "TIPOS:",
+  "  test      → opciones (4) + correcta (0-3). Con imagen opcional (p. ej. foto de un lugar de rodaje: 'retos/sevilla.jpg').",
+  "  foto      → igual que test, pero la imagen sale pixelada y se va aclarando 20 s. Acertar a la primera en <5 s da +2 puntos; en <12 s, +1.",
+  "  silueta   → igual que test; la imagen se muestra en negro (necesita PNG con fondo transparente).",
+  "  emojis    → igual que test; en emojis se escribe la pista en emojis y pregunta es el enunciado.",
+  "  mapa      → punto [x, y] en el mapa (0-300 ancho, 0-500 alto) y radio opcional (tolerancia, 30 por defecto). El jugador toca el mapa. Con imagen opcional: la foto sale encima del mapa (capítulo «Viaje por Poniente»).",
+  "  ordena    → items: lista en el ORDEN CORRECTO (3 a 6). La web los baraja y hay que ordenarlos.",
+  "  empareja  → parejas: [[izquierda, derecha], ...] (3 a 5). La web baraja la columna derecha.",
+  "  cuervo    → sin respuesta: la web da media clave a cada Casa y la otra mitad a la Casa siguiente; hay que hablar. pista opcional.",
+  "  zona      → imagen + punto [x, y] en % de la foto (0-100 de izquierda a derecha y de arriba abajo) y radio opcional (% de tolerancia, 8 por defecto).",
+  "              El jugador toca la foto. Para sacar el punto: abre la foto, mira dónde está la cosa y calcula el % (o pídeselo a Claude).",
+  "  antorcha  → como zona (imagen + punto [x, y] en % + radio opcional), pero la foto sale a oscuras y el jugador la explora con una antorcha",
+  "              que se va consumiendo (45 s). Acertar a la primera en <15 s da +2 puntos; en <30 s, +1. Busca algo concreto: «Encuentra el cuervo».",
+  "  memoria   → imagen + pregunta + opciones (4) + correcta, y segundos opcional (8 por defecto). El jugador pulsa «Estoy listo», ve la imagen",
+  "              esos segundos, un cuervo se la lleva y solo entonces ve la pregunta (no sale en la lista). Pregunta por algo que se pueda contar o recordar.",
+  "  numero    → min, max, correcta; paso (de cuánto en cuánto se mueve, 1 por defecto), margen (cuánto se puede fallar y que valga, 0 por defecto) y unidad (texto opcional, p. ej. 'años').",
+  "              El jugador mueve una barra; tras cada fallo la web le dice si es más o menos, así que pon un min/max amplio.",
+  "La web baraja las opciones por su cuenta, así que da igual dónde pongas la correcta: lo que cuenta es el número de 'correcta' (0 = la primera opción, 1 = la segunda...).",
+  "Coordenadas útiles para los retos de mapa: Invernalia [134,160], Castillo Negro [170,102], Puerto Blanco [155,224], Nido de Águilas [214,290],",
+  "  Aguasdulces [129,300], Harrenhal [150,338], Roca Casterly [76,336], Desembarco del Rey [177,366], Rocadragón [250,320],",
+  "  Bastión de Tormentas [207,410], Altojardín [110,420], Antigua [65,458], Lanza del Sol [222,469], Islas de Hierro [50,296], Dorne [190,470], más allá del Muro [150,70].",
+  "  Más allá del Muro (Punta de Flecha) [185,62], Jardines del Agua [214,466]. Si dos lugares están a menos de ~45 unidades (Harrenhal, Aguasdulces, Desembarco), usa radio 18-20."
+ ],
+ "capitulos": [
+  {
+   "id": "casas",
+   "nombre": "Las Casas",
+   "gema": "#e0b13c",
+   "intro": "Lemas, escudos y castillos. Lo básico para no hacer el ridículo en Poniente."
+  },
+  {
+   "id": "norte",
+   "nombre": "El Norte y el Muro",
+   "gema": "#9fd8ff",
+   "intro": "Invernalia, la Guardia de la Noche y lo que hay más allá."
+  },
+  {
+   "id": "desembarco",
+   "nombre": "Desembarco del Rey",
+   "gema": "#c8281f",
+   "intro": "Intrigas, venenos y tronos en la capital."
+  },
+  {
+   "id": "essos",
+   "nombre": "Más allá del mar Angosto",
+   "gema": "#7a4de0",
+   "intro": "Dragones, Inmaculados y la ciudad sin rostro."
+  },
+  {
+   "id": "batallas",
+   "nombre": "Batallas y bodas",
+   "gema": "#ff7a2a",
+   "intro": "Donde corre la sangre, y a veces el vino."
+  },
+  {
+   "id": "actores",
+   "nombre": "Los actores",
+   "gema": "#4cf58a",
+   "intro": "Quién es quién fuera de Poniente."
+  },
+  {
+   "id": "rodaje",
+   "nombre": "Dónde se rodó",
+   "gema": "#2fa6c9",
+   "intro": "Lugares reales, muchos de ellos en España, que se convirtieron en Poniente."
+  },
+  {
+   "id": "cifras",
+   "nombre": "Cifras de Poniente",
+   "gema": "#c98a3a",
+   "intro": "Años, episodios, ejércitos y espadas. Mueve la barra y clava el número: tras cada fallo, el cuervo te dice si es más o menos."
+  },
+  {
+   "id": "viaje",
+   "nombre": "Viaje por Poniente",
+   "gema": "#3fa26b",
+   "intro": "Fotos de castillos y ciudades sin nombre. ¿Sabrías encontrar cada uno en el mapa? Al final, un salto a Essos."
+  },
+  {
+   "id": "antorcha",
+   "nombre": "La antorcha",
+   "gema": "#ff9a3c",
+   "intro": "Se ha hecho de noche en Poniente. Solo tienes una antorcha que se consume: encuentra lo que se pide antes de que se apague."
+  },
+  {
+   "id": "frases",
+   "nombre": "Frases que hicieron historia",
+   "gema": "#d9b26a",
+   "intro": "En Poniente se habla poco y se recuerda mucho. ¿Sabes quién dijo cada cosa?"
+  },
+  {
+   "id": "dragones",
+   "nombre": "Dragones",
+   "gema": "#c0392b",
+   "intro": "Tres huevos, una hoguera y una madre muy orgullosa. Todo sobre las bestias de los Targaryen."
+  },
+  {
+   "id": "traiciones",
+   "nombre": "Traiciones y muertes",
+   "gema": "#5b1a2a",
+   "intro": "En Juego de Tronos nadie está a salvo. ¿Recuerdas quién cayó, cómo y a manos de quién?"
+  },
+  {
+   "id": "examen",
+   "nombre": "El gran examen del Maestre",
+   "gema": "#8e9aa6",
+   "intro": "El último capítulo antes de Reyes: un poco de todo y más difícil. Calentad para la sobremesa."
+  }
+ ],
+ "retos": [
+  {
+   "id": "casas-01",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuál es el lema de la Casa Stark?",
+   "opciones": [
+    "Nuestra es la furia",
+    "Crecer fuerte",
+    "Fuego y Sangre",
+    "Se acerca el invierno"
+   ],
+   "correcta": 3,
+   "explicacion": "Más que un lema es un aviso: los Stark siempre están preparándose para lo peor."
+  },
+  {
+   "id": "casas-02",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el lema OFICIAL de la Casa Lannister?",
+   "opciones": [
+    "¡Oye mi rugido!",
+    "Tan alto como el honor",
+    "Nuestra es la furia",
+    "Un Lannister siempre paga sus deudas"
+   ],
+   "correcta": 0,
+   "explicacion": "Lo de pagar las deudas es un dicho popular, no el lema. El oficial es «¡Oye mi rugido!»."
+  },
+  {
+   "id": "casas-03",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuál es el lema de la Casa Targaryen?",
+   "opciones": [
+    "Fuego y Sangre",
+    "Nosotros no sembramos",
+    "Familia, deber, honor",
+    "Nunca doblegados, nunca rotos"
+   ],
+   "correcta": 0,
+   "explicacion": "Dragones y conquistas: Fuego y Sangre."
+  },
+  {
+   "id": "casas-04",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuál es el lema de la Casa Baratheon?",
+   "opciones": [
+    "Crecer fuerte",
+    "Aquí estamos",
+    "Nuestra es la furia",
+    "¡Oye mi rugido!"
+   ],
+   "correcta": 2,
+   "explicacion": "Robert Baratheon tenía furia de sobra, aunque la gastó sobre todo en banquetes."
+  },
+  {
+   "id": "casas-05",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuál es el lema de la Casa Tyrell?",
+   "opciones": [
+    "Tan alto como el honor",
+    "Nunca doblegados, nunca rotos",
+    "Se acerca el invierno",
+    "Crecer fuerte"
+   ],
+   "correcta": 3,
+   "explicacion": "Una rosa dorada en campo verde: crecer fuerte."
+  },
+  {
+   "id": "casas-06",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el lema de la Casa Greyjoy?",
+   "opciones": [
+    "Familia, deber, honor",
+    "Fuego y Sangre",
+    "Nosotros no sembramos",
+    "Aquí estamos"
+   ],
+   "correcta": 2,
+   "explicacion": "Las Islas del Hierro viven de lo que toman, no de lo que siembran."
+  },
+  {
+   "id": "casas-07",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el lema de la Casa Martell de Dorne?",
+   "opciones": [
+    "Crecer fuerte",
+    "Nuestra es la furia",
+    "Nunca doblegados, nunca rotos",
+    "Tan alto como el honor"
+   ],
+   "correcta": 2,
+   "explicacion": "Dorne fue el único reino que los dragones no pudieron conquistar."
+  },
+  {
+   "id": "casas-08",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el lema de la Casa Tully de Aguasdulces?",
+   "opciones": [
+    "Familia, deber, honor",
+    "Se acerca el invierno",
+    "Tan alto como el honor",
+    "Aquí estamos"
+   ],
+   "correcta": 0,
+   "explicacion": "Catelyn Stark era una Tully, y vivía por ese orden: familia primero."
+  },
+  {
+   "id": "casas-09",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el lema de la Casa Arryn del Valle?",
+   "opciones": [
+    "Familia, deber, honor",
+    "Tan alto como el honor",
+    "Nunca doblegados, nunca rotos",
+    "¡Oye mi rugido!"
+   ],
+   "correcta": 1,
+   "explicacion": "Su castillo, el Nido de Águilas, está en lo alto de una montaña. Lo de «alto» no es casual."
+  },
+  {
+   "id": "casas-10",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué animal aparece en el escudo de la Casa Stark?",
+   "opciones": [
+    "Un halcón",
+    "Un oso",
+    "Un lobo huargo",
+    "Un ciervo"
+   ],
+   "correcta": 2,
+   "explicacion": "Un lobo huargo gris sobre campo blanco, como los seis cachorros que encuentran los niños Stark."
+  },
+  {
+   "id": "casas-11",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué figura lleva el escudo de la Casa Bolton?",
+   "opciones": [
+    "Un sol atravesado por una lanza",
+    "Un hombre desollado",
+    "Un kraken",
+    "Una trucha"
+   ],
+   "correcta": 1,
+   "explicacion": "Los Bolton tenían fama de desollar a sus enemigos. Ramsay se tomó el escudo al pie de la letra."
+  },
+  {
+   "id": "casas-12",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el castillo de la Casa Tyrell?",
+   "opciones": [
+    "Aguasdulces",
+    "Bastión de Tormentas",
+    "Altojardín",
+    "Roca Casterly"
+   ],
+   "correcta": 2,
+   "explicacion": "Altojardín, en el Dominio: la región más fértil de los Siete Reinos."
+  },
+  {
+   "id": "casas-13",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué Casa tiene por escudo un sol atravesado por una lanza?",
+   "opciones": [
+    "Martell",
+    "Mormont",
+    "Tyrell",
+    "Baratheon"
+   ],
+   "correcta": 0,
+   "explicacion": "El sol de Dorne y la lanza de la reina Nymeria."
+  },
+  {
+   "id": "casas-14",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué Casa controla Los Gemelos, el puente que cruza el Forca Verde?",
+   "opciones": [
+    "Karstark",
+    "Bolton",
+    "Tully",
+    "Frey"
+   ],
+   "correcta": 3,
+   "explicacion": "Walder Frey cobraba peaje por cruzar su puente. Y guardaba rencor por todo lo demás."
+  },
+  {
+   "id": "casas-15",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Cuál es el lema de la Casa Mormont de la Isla del Oso?",
+   "opciones": [
+    "Nuestra es la furia",
+    "Crecer fuerte",
+    "Nosotros no sembramos",
+    "Aquí estamos"
+   ],
+   "correcta": 3,
+   "explicacion": "«Aquí estamos». Lyanna Mormont lo demostró con diez años y más carácter que medio Norte."
+  },
+  {
+   "id": "norte-01",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llama el lobo huargo de Jon Nieve?",
+   "opciones": [
+    "Fantasma",
+    "Verano",
+    "Viento Gris",
+    "Nymeria"
+   ],
+   "correcta": 0,
+   "explicacion": "Blanco y silencioso, como un fantasma. El único albino de la camada."
+  },
+  {
+   "id": "norte-02",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llama la espada de acero valyrio de Jon Nieve?",
+   "opciones": [
+    "Garra",
+    "Hielo",
+    "Aguja",
+    "Guardajuramentos"
+   ],
+   "correcta": 0,
+   "explicacion": "Garra era la espada de la Casa Mormont. Jeor Mormont se la regaló a Jon."
+  },
+  {
+   "id": "norte-03",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién es el Lord Comandante de la Guardia de la Noche cuando Jon llega al Muro?",
+   "opciones": [
+    "Alliser Thorne",
+    "Maestre Aemon",
+    "Benjen Stark",
+    "Jeor Mormont"
+   ],
+   "correcta": 3,
+   "explicacion": "El Viejo Oso, padre de Jorah Mormont."
+  },
+  {
+   "id": "norte-04",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llama el Rey más allá del Muro que une a los salvajes?",
+   "opciones": [
+    "Rattleshirt",
+    "Craster",
+    "Mance Rayder",
+    "Tormund Matagigantes"
+   ],
+   "correcta": 2,
+   "explicacion": "Un antiguo hermano de la Guardia de la Noche que desertó y unió a cien clanes."
+  },
+  {
+   "id": "norte-05",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué frase repite Ygritte a Jon Nieve una y otra vez?",
+   "opciones": [
+    "Eres un cuervo, Jon Nieve",
+    "No sabes nada, Jon Nieve",
+    "Se acerca el invierno, Jon Nieve",
+    "Vuelve al Muro, Jon Nieve"
+   ],
+   "correcta": 1,
+   "explicacion": "Y tenía razón casi siempre."
+  },
+  {
+   "id": "norte-06",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál era el verdadero nombre de Hodor en la serie?",
+   "opciones": [
+    "Walder",
+    "Willem",
+    "Wylis",
+    "Wyman"
+   ],
+   "correcta": 2,
+   "explicacion": "Wylis, el mozo de cuadras. Lo de «Hodor» viene de «hold the door» (aguanta la puerta)."
+  },
+  {
+   "id": "norte-07",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién construyó el Muro, según la leyenda?",
+   "opciones": [
+    "Brandon el Constructor",
+    "Aegon el Conquistador",
+    "Torrhen Stark",
+    "Bran el Roto"
+   ],
+   "correcta": 0,
+   "explicacion": "Brandon el Constructor, fundador de la Casa Stark, hace ocho mil años."
+  },
+  {
+   "id": "norte-08",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo se llama el gigante que lucha junto a Jon en la Batalla de los Bastardos?",
+   "opciones": [
+    "Wun Wun",
+    "Mag el Poderoso",
+    "Tormund",
+    "Dongo"
+   ],
+   "correcta": 0,
+   "explicacion": "Wun Weg Wun Dar Wun, para los amigos Wun Wun. Derribó la puerta de Invernalia."
+  },
+  {
+   "id": "norte-09",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo se llama el castillo de la Guardia de la Noche donde sirve Jon Nieve?",
+   "opciones": [
+    "Castillo Negro",
+    "Guardiaoriente del Mar",
+    "Fuerte de la Noche",
+    "Torre Sombría"
+   ],
+   "correcta": 0,
+   "explicacion": "El Castillo Negro, sede de la Guardia, al pie del Muro."
+  },
+  {
+   "id": "norte-10",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llama el lobo huargo de Arya Stark?",
+   "opciones": [
+    "Peludo",
+    "Nymeria",
+    "Dama",
+    "Fantasma"
+   ],
+   "correcta": 1,
+   "explicacion": "Arya la echa para salvarla de la reina. Vuelven a verse años después, en el Norte."
+  },
+  {
+   "id": "norte-11",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el bastardo que se queda con Invernalia tras traicionar a los Stark?",
+   "opciones": [
+    "Theon Greyjoy",
+    "Ramsay Nieve (Bolton)",
+    "Jon Nieve",
+    "Gendry"
+   ],
+   "correcta": 1,
+   "explicacion": "Ramsay, hijo bastardo de Roose Bolton, luego legitimado como Bolton."
+  },
+  {
+   "id": "norte-12",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿En qué se convierte Bran Stark al norte del Muro?",
+   "opciones": [
+    "En un Hijo del Bosque",
+    "En un Caminante Blanco",
+    "En un cambiapieles cualquiera",
+    "En el Cuervo de Tres Ojos"
+   ],
+   "correcta": 3,
+   "explicacion": "Hereda el puesto del anterior Cuervo de Tres Ojos cuando el Rey de la Noche ataca la cueva."
+  },
+  {
+   "id": "norte-13",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Cómo se llama el amigo de Jon en la Guardia que se convierte en maestre?",
+   "opciones": [
+    "Pypar",
+    "Samwell Tarly",
+    "Edd el Penas",
+    "Grenn"
+   ],
+   "correcta": 1,
+   "explicacion": "Sam, que cambió la espada por los libros en la Ciudadela de Antigua."
+  },
+  {
+   "id": "desembarco-01",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo murió el rey Joffrey?",
+   "opciones": [
+    "Envenenado en su boda",
+    "Apuñalado por el Perro",
+    "Quemado con fuego valyrio",
+    "Cayó de un caballo"
+   ],
+   "correcta": 0,
+   "explicacion": "La Boda Púrpura. Nadie en Poniente lloró mucho."
+  },
+  {
+   "id": "desembarco-02",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién envenenó realmente a Joffrey?",
+   "opciones": [
+    "Olenna Tyrell",
+    "Tyrion Lannister",
+    "Sansa Stark",
+    "Varys"
+   ],
+   "correcta": 0,
+   "explicacion": "La Reina de Espinas, con ayuda de Meñique. Ella misma se lo confiesa a Jaime antes de morir."
+  },
+  {
+   "id": "desembarco-03",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se conoce a Petyr Baelish?",
+   "opciones": [
+    "La Araña",
+    "Meñique",
+    "El Perro",
+    "El Matarreyes"
+   ],
+   "correcta": 1,
+   "explicacion": "Por su estatura y por sus tierras, los Dedos. Consejero de la moneda y dueño de burdeles."
+  },
+  {
+   "id": "desembarco-04",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién es «la Araña», el jefe de los espías del reino?",
+   "opciones": [
+    "Varys",
+    "Pycelle",
+    "Meñique",
+    "Qyburn"
+   ],
+   "correcta": 0,
+   "explicacion": "Varys y sus «pajaritos», los niños que le cuentan todo lo que se dice en la capital."
+  },
+  {
+   "id": "desembarco-05",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Por qué llaman a Jaime Lannister «el Matarreyes»?",
+   "opciones": [
+    "Porque mató a Renly Baratheon",
+    "Porque mató a Joffrey",
+    "Porque mató a Robert Baratheon",
+    "Porque mató al Rey Loco, Aerys Targaryen"
+   ],
+   "correcta": 3,
+   "explicacion": "Era de su Guardia Real y le clavó la espada por la espalda. Para salvar la ciudad, aunque nadie le creyera."
+  },
+  {
+   "id": "desembarco-06",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién fue el campeón de Tyrion en su juicio por combate contra la Montaña?",
+   "opciones": [
+    "Jaime Lannister",
+    "Bronn",
+    "Oberyn Martell",
+    "Sandor Clegane"
+   ],
+   "correcta": 2,
+   "explicacion": "La Víbora Roja de Dorne. Ganó el combate y lo perdió por querer una confesión."
+  },
+  {
+   "id": "desembarco-07",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué palabra grita la septa Unella durante la caminata de Cersei?",
+   "opciones": [
+    "Arrepiéntete",
+    "Pecadora",
+    "Vergüenza",
+    "Culpable"
+   ],
+   "correcta": 2,
+   "explicacion": "«Vergüenza», campanilla en mano, desde el Septo hasta la Fortaleza Roja."
+  },
+  {
+   "id": "desembarco-08",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Con qué destruye Cersei el Gran Septo de Baelor?",
+   "opciones": [
+    "Con un terremoto provocado",
+    "Con fuego valyrio",
+    "Con dragones",
+    "Con aceite hirviendo"
+   ],
+   "correcta": 1,
+   "explicacion": "El fuego verde que los alquimistas guardaban bajo la ciudad desde tiempos del Rey Loco."
+  },
+  {
+   "id": "desembarco-09",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién era la Mano del Rey cuya muerte lleva a Ned Stark a la capital?",
+   "opciones": [
+    "Jon Arryn",
+    "Jon Connington",
+    "Stannis Baratheon",
+    "Tywin Lannister"
+   ],
+   "correcta": 0,
+   "explicacion": "Jon Arryn, que había criado a Ned y a Robert. Su muerte abre la serie."
+  },
+  {
+   "id": "desembarco-10",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo se llama el líder de los Gorriones que encarcela a Cersei?",
+   "opciones": [
+    "Lancel Lannister",
+    "El Gorrión Supremo",
+    "El Padre Militante",
+    "El Septón Supremo Pycelle"
+   ],
+   "correcta": 1,
+   "explicacion": "Un hombre descalzo que acabó mandando más que la reina. Hasta que llegó el fuego valyrio."
+  },
+  {
+   "id": "desembarco-11",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Quién es la primera persona de la Guardia Real a la que Joffrey despide por viejo?",
+   "opciones": [
+    "Arys Oakheart",
+    "Meryn Trant",
+    "Boros Blount",
+    "Barristan Selmy"
+   ],
+   "correcta": 3,
+   "explicacion": "Barristan el Bravo, que se marcha a servir a Daenerys al otro lado del mar."
+  },
+  {
+   "id": "desembarco-12",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se conoce a Sandor Clegane?",
+   "opciones": [
+    "La Montaña",
+    "El Gigante",
+    "El Sabueso Negro",
+    "El Perro"
+   ],
+   "correcta": 3,
+   "explicacion": "El Perro. Su hermano Gregor es la Montaña, el que le quemó la cara de niño."
+  },
+  {
+   "id": "essos-01",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llaman los tres dragones de Daenerys?",
+   "opciones": [
+    "Viserion, Caraxes y Drogon",
+    "Rhaegal, Meraxes y Drogon",
+    "Drogon, Rhaegal y Viserion",
+    "Drogon, Balerion y Vhagar"
+   ],
+   "correcta": 2,
+   "explicacion": "Por Drogo, Rhaegar y Viserys: su marido y sus dos hermanos."
+  },
+  {
+   "id": "essos-02",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo muere Viserys Targaryen, el hermano de Daenerys?",
+   "opciones": [
+    "Con una corona de oro fundido",
+    "Envenenado",
+    "Ahogado en el mar Dothraki",
+    "Quemado por un dragón"
+   ],
+   "correcta": 0,
+   "explicacion": "Pedía una corona de oro, y Khal Drogo se la dio. Literalmente."
+  },
+  {
+   "id": "essos-03",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué ciudad compra Daenerys a los Inmaculados?",
+   "opciones": [
+    "Yunkai",
+    "Qarth",
+    "Astapor",
+    "Meereen"
+   ],
+   "correcta": 2,
+   "explicacion": "Astapor. Paga con un dragón... y luego ordena al dragón que queme al vendedor."
+  },
+  {
+   "id": "essos-04",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué se responde a «Valar morghulis»?",
+   "opciones": [
+    "Dracarys",
+    "Valar dohaeris",
+    "Valar ghulis",
+    "Kessa"
+   ],
+   "correcta": 1,
+   "explicacion": "«Todos los hombres deben morir» y «Todos los hombres deben servir». Lengua de Braavos."
+  },
+  {
+   "id": "essos-05",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué palabra usa Daenerys para ordenar a sus dragones que escupan fuego?",
+   "opciones": [
+    "Dohaeris",
+    "Dracarys",
+    "Zaldrīzes",
+    "Valar morghulis"
+   ],
+   "correcta": 1,
+   "explicacion": "«Dracarys», fuego de dragón en alto valyrio."
+  },
+  {
+   "id": "essos-06",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué ciudad entrena Arya con los Hombres sin Rostro?",
+   "opciones": [
+    "Lys",
+    "Pentos",
+    "Braavos",
+    "Volantis"
+   ],
+   "correcta": 2,
+   "explicacion": "Braavos, en la Casa de Blanco y Negro, con Jaqen H'ghar."
+  },
+  {
+   "id": "essos-07",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué enfermedad contrae Jorah Mormont?",
+   "opciones": [
+    "Fiebre de las piedras",
+    "Escamaverde",
+    "Psoriagris",
+    "Peste gris"
+   ],
+   "correcta": 2,
+   "explicacion": "La psoriagris, que convierte la piel en piedra. Sam lo cura en la Ciudadela, con mucho asco."
+  },
+  {
+   "id": "essos-08",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué ciudad gobierna Daenerys durante varias temporadas antes de ir a Poniente?",
+   "opciones": [
+    "Qarth",
+    "Meereen",
+    "Astapor",
+    "Pentos"
+   ],
+   "correcta": 1,
+   "explicacion": "Meereen, con sus pirámides y sus Hijos de la Arpía."
+  },
+  {
+   "id": "essos-09",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo se llama el khal con el que casan a Daenerys?",
+   "opciones": [
+    "Jhaqo",
+    "Drogo",
+    "Pono",
+    "Moro"
+   ],
+   "correcta": 1,
+   "explicacion": "Khal Drogo, mi sol y estrellas."
+  },
+  {
+   "id": "essos-10",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Cómo se llama el banco de Braavos al que todo el mundo debe dinero?",
+   "opciones": [
+    "La Casa de Blanco y Negro",
+    "El Tesoro del Titán",
+    "El Banco de Oro",
+    "El Banco de Hierro"
+   ],
+   "correcta": 3,
+   "explicacion": "El Banco de Hierro siempre cobra sus deudas. Con un Lannister, van empatados."
+  },
+  {
+   "id": "essos-11",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo se llama la sacerdotisa roja que sirve a Stannis y luego resucita a Jon?",
+   "opciones": [
+    "Quaithe",
+    "Thoros",
+    "Kinvara",
+    "Melisandre"
+   ],
+   "correcta": 3,
+   "explicacion": "Melisandre de Asshai. Sin collar, tiene unos cuantos siglos más de los que aparenta."
+  },
+  {
+   "id": "essos-12",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Cómo se llama la compañía de mercenarios que dirige Daario Naharis?",
+   "opciones": [
+    "Los Cuervos de Tormenta",
+    "La Compañía Dorada",
+    "Los Hijos de la Arpía",
+    "Los Segundos Hijos"
+   ],
+   "correcta": 3,
+   "explicacion": "Los Segundos Hijos, que cambian de bando en cuanto ven a Daenerys."
+  },
+  {
+   "id": "batallas-01",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién mata al Rey de la Noche en la Batalla de Invernalia?",
+   "opciones": [
+    "Arya Stark",
+    "Jon Nieve",
+    "Bran Stark",
+    "Daenerys Targaryen"
+   ],
+   "correcta": 0,
+   "explicacion": "Con la daga de acero valyrio y el truco de cambiar de mano. Nadie lo vio venir, ni el propio Rey."
+  },
+  {
+   "id": "batallas-02",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿En qué castillo se celebra la Boda Roja?",
+   "opciones": [
+    "Invernalia",
+    "Los Gemelos",
+    "Aguasdulces",
+    "Harrenhal"
+   ],
+   "correcta": 1,
+   "explicacion": "En Los Gemelos, la casa de Walder Frey. Mueren Robb, Catelyn y Talisa."
+  },
+  {
+   "id": "batallas-03",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién dirige la defensa de Desembarco del Rey en la Batalla del Aguasnegras?",
+   "opciones": [
+    "Joffrey Baratheon",
+    "Tyrion Lannister",
+    "Tywin Lannister",
+    "Jaime Lannister"
+   ],
+   "correcta": 1,
+   "explicacion": "Tyrion, con fuego valyrio y una salida por la poterna. Tywin llega al final a llevarse la gloria."
+  },
+  {
+   "id": "batallas-04",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué ejército aparece en el último momento para ganar la Batalla de los Bastardos?",
+   "opciones": [
+    "Los hombres de Dorne",
+    "Los caballeros del Valle",
+    "Los Inmaculados",
+    "Los salvajes de Tormund"
+   ],
+   "correcta": 1,
+   "explicacion": "Sansa se los pidió a Meñique en secreto. Jon no sabía nada."
+  },
+  {
+   "id": "batallas-05",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo muere el dragón Viserion?",
+   "opciones": [
+    "Con una lanza de hielo del Rey de la Noche",
+    "Con un escorpión de Euron Greyjoy",
+    "Con un escorpión de Qyburn",
+    "Ahogado en el mar Angosto"
+   ],
+   "correcta": 0,
+   "explicacion": "Más allá del Muro. Después lo resucita y lo usa para derribar el Muro."
+  },
+  {
+   "id": "batallas-06",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién derriba al dragón Rhaegal?",
+   "opciones": [
+    "El Rey de la Noche",
+    "Euron Greyjoy, con escorpiones desde sus barcos",
+    "Bronn, con un escorpión",
+    "Cersei, desde la Fortaleza Roja"
+   ],
+   "correcta": 1,
+   "explicacion": "Una emboscada frente a Rocadragón, en la octava temporada."
+  },
+  {
+   "id": "batallas-07",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué batalla captura Robb Stark a Jaime Lannister?",
+   "opciones": [
+    "En Harrenhal",
+    "En el Aguasnegras",
+    "En el Forca Verde",
+    "En el Bosque Susurrante"
+   ],
+   "correcta": 3,
+   "explicacion": "Robb engaña a Tywin y cae sobre el ejército de Jaime por sorpresa."
+  },
+  {
+   "id": "batallas-08",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién dispara el escorpión a Drogon en el ataque a la caravana Lannister?",
+   "opciones": [
+    "Jaime Lannister",
+    "Qyburn",
+    "Euron Greyjoy",
+    "Bronn"
+   ],
+   "correcta": 3,
+   "explicacion": "Bronn, que acierta y luego salva a Jaime de morir quemado. Dos favores en un día."
+  },
+  {
+   "id": "batallas-09",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿En qué lugar mata Jon Nieve por primera vez a un Caminante Blanco con Garra?",
+   "opciones": [
+    "En el Castillo Negro",
+    "En Invernalia",
+    "En el Puño de los Primeros Hombres",
+    "En Casa Austera"
+   ],
+   "correcta": 3,
+   "explicacion": "Casa Austera (Hardhome). Y descubre que el acero valyrio los rompe como el cristal."
+  },
+  {
+   "id": "batallas-10",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué hace Daenerys con Desembarco del Rey después de que la ciudad se rinda?",
+   "opciones": [
+    "La perdona y entra en paz",
+    "La quema entera con Drogon",
+    "La entrega a Jon Nieve",
+    "La vende al Banco de Hierro"
+   ],
+   "correcta": 1,
+   "explicacion": "Las campanas suenan, y ella decide no escucharlas."
+  },
+  {
+   "id": "batallas-11",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Quién mata a Walder Frey?",
+   "opciones": [
+    "Sansa Stark",
+    "Arya Stark, disfrazada con su cara",
+    "Brienne de Tarth",
+    "El Perro"
+   ],
+   "correcta": 1,
+   "explicacion": "Después de servirle un pastel con sus hijos dentro. El Norte recuerda."
+  },
+  {
+   "id": "actores-01",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué actor interpreta a Tyrion Lannister?",
+   "opciones": [
+    "Iwan Rheon",
+    "Peter Dinklage",
+    "Kit Harington",
+    "Warwick Davis"
+   ],
+   "correcta": 1,
+   "explicacion": "Ganó cuatro Emmys por el papel."
+  },
+  {
+   "id": "actores-02",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué actor interpreta a Jon Nieve?",
+   "opciones": [
+    "Joe Dempsie",
+    "Alfie Allen",
+    "Kit Harington",
+    "Richard Madden"
+   ],
+   "correcta": 2,
+   "explicacion": "Y se casó en la vida real con Rose Leslie, la actriz que hacía de Ygritte."
+  },
+  {
+   "id": "actores-03",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué actriz interpreta a Daenerys Targaryen?",
+   "opciones": [
+    "Emilia Clarke",
+    "Sophie Turner",
+    "Natalie Dormer",
+    "Lena Headey"
+   ],
+   "correcta": 0,
+   "explicacion": "Emilia Clarke, que en la vida real es morena y odiaba la peluca rubia."
+  },
+  {
+   "id": "actores-04",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actriz interpreta a Cersei Lannister?",
+   "opciones": [
+    "Carice van Houten",
+    "Natalie Dormer",
+    "Lena Headey",
+    "Gwendoline Christie"
+   ],
+   "correcta": 2,
+   "explicacion": "Lena Headey, que también fue Sarah Connor en la serie de Terminator."
+  },
+  {
+   "id": "actores-05",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actriz interpreta a Arya Stark?",
+   "opciones": [
+    "Hannah Murray",
+    "Sophie Turner",
+    "Maisie Williams",
+    "Bella Ramsey"
+   ],
+   "correcta": 2,
+   "explicacion": "Maisie Williams. Tenía 12 años cuando empezó la serie."
+  },
+  {
+   "id": "actores-06",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Ned Stark?",
+   "opciones": [
+    "Sean Bean",
+    "Charles Dance",
+    "Iain Glen",
+    "Liam Cunningham"
+   ],
+   "correcta": 0,
+   "explicacion": "Sean Bean, famoso por morir en casi todas sus películas. Aquí tampoco falló."
+  },
+  {
+   "id": "actores-07",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Oberyn Martell, la Víbora Roja?",
+   "opciones": [
+    "Pedro Pascal",
+    "Diego Luna",
+    "Oscar Isaac",
+    "Javier Bardem"
+   ],
+   "correcta": 0,
+   "explicacion": "Pedro Pascal, antes de The Mandalorian y The Last of Us."
+  },
+  {
+   "id": "actores-08",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Jaime Lannister?",
+   "opciones": [
+    "Michiel Huisman",
+    "Jason Momoa",
+    "Nikolaj Coster-Waldau",
+    "Tom Wlaschiha"
+   ],
+   "correcta": 2,
+   "explicacion": "Nikolaj Coster-Waldau, danés."
+  },
+  {
+   "id": "actores-09",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué actor interpreta a Khal Drogo?",
+   "opciones": [
+    "Hafþór Björnsson",
+    "Jason Momoa",
+    "Dwayne Johnson",
+    "Kristofer Hivju"
+   ],
+   "correcta": 1,
+   "explicacion": "Jason Momoa, que después fue Aquaman."
+  },
+  {
+   "id": "actores-10",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Quién interpreta a la Montaña a partir de la cuarta temporada?",
+   "opciones": [
+    "Conan Stevens",
+    "Rory McCann",
+    "Hafþór Júlíus Björnsson",
+    "Ian Whyte"
+   ],
+   "correcta": 2,
+   "explicacion": "Un forzudo islandés, ganador de El Hombre Más Fuerte del Mundo en 2018."
+  },
+  {
+   "id": "actores-11",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Tormund Matagigantes?",
+   "opciones": [
+    "Ciarán Hinds",
+    "Kristian Nairn",
+    "Kristofer Hivju",
+    "Rory McCann"
+   ],
+   "correcta": 2,
+   "explicacion": "Kristofer Hivju, noruego, con la barba más famosa de la serie."
+  },
+  {
+   "id": "actores-12",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿A qué se dedica Kristian Nairn, el actor de Hodor, cuando no actúa?",
+   "opciones": [
+    "Es DJ",
+    "Es cocinero",
+    "Es jugador de rugby",
+    "Es profesor de yoga"
+   ],
+   "correcta": 0,
+   "explicacion": "DJ de música electrónica. Tras la serie hizo una gira llamada «Rave of Thrones»."
+  },
+  {
+   "id": "actores-13",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actriz interpreta a Sansa Stark?",
+   "opciones": [
+    "Maisie Williams",
+    "Sophie Turner",
+    "Natalie Dormer",
+    "Rose Leslie"
+   ],
+   "correcta": 1,
+   "explicacion": "Sophie Turner, que luego fue Jean Grey en X-Men."
+  },
+  {
+   "id": "actores-14",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Tywin Lannister?",
+   "opciones": [
+    "Jonathan Pryce",
+    "Stephen Dillane",
+    "Sean Bean",
+    "Charles Dance"
+   ],
+   "correcta": 3,
+   "explicacion": "Charles Dance, que desuella un ciervo de verdad en su primera escena."
+  },
+  {
+   "id": "actores-15",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué actor interpreta a Varys?",
+   "opciones": [
+    "Aidan Gillen",
+    "Conleth Hill",
+    "Julian Glover",
+    "Anton Lesser"
+   ],
+   "correcta": 1,
+   "explicacion": "Conleth Hill, norirlandés. En la vida real tiene pelo y barba."
+  },
+  {
+   "id": "actores-16",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actriz interpreta a Brienne de Tarth?",
+   "opciones": [
+    "Indira Varma",
+    "Carice van Houten",
+    "Lena Headey",
+    "Gwendoline Christie"
+   ],
+   "correcta": 3,
+   "explicacion": "Gwendoline Christie, que también fue la capitana Phasma en Star Wars."
+  },
+  {
+   "id": "actores-17",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué actor interpreta a Ramsay Bolton?",
+   "opciones": [
+    "Iwan Rheon",
+    "Joe Dempsie",
+    "Alfie Allen",
+    "Jack Gleeson"
+   ],
+   "correcta": 0,
+   "explicacion": "Iwan Rheon, galés. Dicen que es un encanto en persona, pero cuesta creerlo."
+  },
+  {
+   "id": "actores-18",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué actor interpreta a Joffrey Baratheon?",
+   "opciones": [
+    "Iwan Rheon",
+    "Jack Gleeson",
+    "Eugene Simon",
+    "Dean-Charles Chapman"
+   ],
+   "correcta": 1,
+   "explicacion": "Jack Gleeson, que dejó de actuar al terminar su papel y volvió años después."
+  },
+  {
+   "id": "rodaje-01",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿En qué ciudad real se rodó Desembarco del Rey durante la mayor parte de la serie?",
+   "opciones": [
+    "Sevilla (España)",
+    "Belfast (Irlanda del Norte)",
+    "Malta",
+    "Dubrovnik (Croacia)"
+   ],
+   "correcta": 3,
+   "explicacion": "Las murallas de Dubrovnik son las de la capital de los Siete Reinos. En la primera temporada fue Malta."
+  },
+  {
+   "id": "rodaje-02",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿En qué país se rodaron las escenas más allá del Muro, con nieve y glaciares?",
+   "opciones": [
+    "Noruega",
+    "Canadá",
+    "Islandia",
+    "Suiza"
+   ],
+   "correcta": 2,
+   "explicacion": "Islandia: glaciares, lagos helados y la cueva donde Jon e Ygritte... ya sabéis."
+  },
+  {
+   "id": "rodaje-03",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué monumento español son los Jardines de Agua de Dorne?",
+   "opciones": [
+    "El Alcázar de Segovia",
+    "La Mezquita de Córdoba",
+    "La Alhambra de Granada",
+    "El Real Alcázar de Sevilla"
+   ],
+   "correcta": 3,
+   "explicacion": "Los jardines del Alcázar de Sevilla, donde Ellaria conspira entre fuentes y naranjos."
+  },
+  {
+   "id": "rodaje-04",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué ciudad catalana puso sus calles y su catedral para Braavos y Antigua?",
+   "opciones": [
+    "Lleida",
+    "Tarragona",
+    "Besalú",
+    "Girona"
+   ],
+   "correcta": 3,
+   "explicacion": "Girona: la escalinata de la catedral y el barrio antiguo, en la sexta temporada."
+  },
+  {
+   "id": "rodaje-05",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué playa guipuzcoana es la de Rocadragón, donde desembarca Daenerys?",
+   "opciones": [
+    "La Concha, en San Sebastián",
+    "Itzurun, en Zumaia",
+    "Laga, en Ibarrangelu",
+    "Zarautz"
+   ],
+   "correcta": 1,
+   "explicacion": "Itzurun, con su flysch. Las escaleras del castillo son San Juan de Gaztelugatxe, en Bizkaia."
+  },
+  {
+   "id": "rodaje-06",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué paisaje navarro fue el mar Dothraki en la sexta temporada?",
+   "opciones": [
+    "Los Pirineos",
+    "Las Bardenas Reales",
+    "La selva de Irati",
+    "El valle del Baztán"
+   ],
+   "correcta": 1,
+   "explicacion": "Las Bardenas, un desierto en Navarra. Allí capturan a Daenerys los dothraki."
+  },
+  {
+   "id": "rodaje-07",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué castillo de Guadalajara fue la Torre de la Alegría, donde nace Jon Nieve?",
+   "opciones": [
+    "El castillo de Atienza",
+    "El castillo de Zafra",
+    "El castillo de Sigüenza",
+    "El castillo de Molina de Aragón"
+   ],
+   "correcta": 1,
+   "explicacion": "El castillo de Zafra, sobre una roca en mitad de la nada. Perfecto para una torre secreta."
+  },
+  {
+   "id": "rodaje-08",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿En qué plaza de toros se rodó la escena del foso de Daznak, en Meereen?",
+   "opciones": [
+    "Las Ventas (Madrid)",
+    "La Maestranza (Sevilla)",
+    "Ronda (Málaga)",
+    "Osuna (Sevilla)"
+   ],
+   "correcta": 3,
+   "explicacion": "Osuna. Medio pueblo salió de extra y Drogon rescató a Daenerys en su plaza."
+  },
+  {
+   "id": "rodaje-09",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué ciudad de Castellón fue Meereen en la sexta temporada?",
+   "opciones": [
+    "Morella",
+    "Vinaròs",
+    "Peñíscola",
+    "Castellón de la Plana"
+   ],
+   "correcta": 2,
+   "explicacion": "Peñíscola, con su castillo del Papa Luna y sus calles blancas."
+  },
+  {
+   "id": "rodaje-10",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué castillo cordobés hizo de Altojardín?",
+   "opciones": [
+    "El Alcázar de los Reyes Cristianos",
+    "El castillo de Belalcázar",
+    "Medina Azahara",
+    "El castillo de Almodóvar del Río"
+   ],
+   "correcta": 3,
+   "explicacion": "Almodóvar del Río, sobre el Guadalquivir. Allí Jaime toma Altojardín y Olenna confiesa."
+  },
+  {
+   "id": "rodaje-11",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué ruinas romanas sevillanas fueron el Pozo Dragón, donde se reúnen todos en la séptima temporada?",
+   "opciones": [
+    "Baelo Claudia",
+    "Carmona",
+    "Itálica",
+    "Mérida"
+   ],
+   "correcta": 2,
+   "explicacion": "El anfiteatro de Itálica, en Santiponce. También sale en el último capítulo de la serie."
+  },
+  {
+   "id": "rodaje-12",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué país están los estudios donde se rodaron la mayoría de interiores, y Invernalia y el Castillo Negro?",
+   "opciones": [
+    "Irlanda del Norte",
+    "Croacia",
+    "Escocia",
+    "Inglaterra"
+   ],
+   "correcta": 0,
+   "explicacion": "Irlanda del Norte, en Belfast. Castle Ward fue Invernalia y una cantera, el Castillo Negro."
+  },
+  {
+   "id": "rodaje-13",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué castillo extremeño fue Roca Casterly en la séptima temporada?",
+   "opciones": [
+    "El de Alburquerque",
+    "El de Olivenza",
+    "El castillo de Cáceres",
+    "El castillo de Trujillo"
+   ],
+   "correcta": 3,
+   "explicacion": "Trujillo, en Cáceres. Allí los Inmaculados toman la Roca por el desagüe de Tyrion."
+  },
+  {
+   "id": "rodaje-14",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué país se rodó la ciudad de Astapor, con su muralla junto al mar?",
+   "opciones": [
+    "Marruecos",
+    "Turquía",
+    "Egipto",
+    "Túnez"
+   ],
+   "correcta": 0,
+   "explicacion": "Essaouira, en la costa de Marruecos."
+  },
+  {
+   "id": "mapa-01",
+   "capitulo": "norte",
+   "tipo": "mapa",
+   "dificultad": "escudero",
+   "pregunta": "Señala Invernalia en el mapa.",
+   "punto": [
+    134,
+    160
+   ],
+   "radio": 32,
+   "explicacion": "La casa de los Stark, en el corazón del Norte."
+  },
+  {
+   "id": "mapa-02",
+   "capitulo": "desembarco",
+   "tipo": "mapa",
+   "dificultad": "escudero",
+   "pregunta": "¿Dónde está Desembarco del Rey?",
+   "punto": [
+    177,
+    366
+   ],
+   "radio": 32,
+   "explicacion": "En la bahía del Aguasnegras, a medio camino entre el Norte y Dorne."
+  },
+  {
+   "id": "mapa-03",
+   "capitulo": "batallas",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "pregunta": "¿Dónde se libró la Batalla de los Bastardos?",
+   "punto": [
+    134,
+    160
+   ],
+   "radio": 32,
+   "explicacion": "A las puertas de Invernalia: Jon y Sansa recuperan su casa."
+  },
+  {
+   "id": "mapa-04",
+   "capitulo": "casas",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "pregunta": "Señala Rocadragón, la isla de los Targaryen.",
+   "punto": [
+    250,
+    320
+   ],
+   "radio": 30,
+   "explicacion": "Una isla volcánica frente a la bahía del Aguasnegras."
+  },
+  {
+   "id": "mapa-05",
+   "capitulo": "casas",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "pregunta": "¿Dónde está Altojardín?",
+   "punto": [
+    110,
+    420
+   ],
+   "radio": 32,
+   "explicacion": "En el Dominio, la tierra más fértil de los Siete Reinos."
+  },
+  {
+   "id": "ordena-01",
+   "capitulo": "batallas",
+   "tipo": "ordena",
+   "dificultad": "caballero",
+   "pregunta": "Ordena estos acontecimientos del primero al último.",
+   "items": [
+    "La ejecución de Ned Stark",
+    "La Boda Roja",
+    "La Boda Púrpura",
+    "La Batalla de los Bastardos"
+   ],
+   "explicacion": "Temporadas 1, 3, 4 y 6."
+  },
+  {
+   "id": "ordena-02",
+   "capitulo": "desembarco",
+   "tipo": "ordena",
+   "dificultad": "maestre",
+   "pregunta": "Ordena a quienes se sentaron en el Trono de Hierro, del primero al último.",
+   "items": [
+    "Robert Baratheon",
+    "Joffrey Baratheon",
+    "Tommen Baratheon",
+    "Cersei Lannister"
+   ],
+   "explicacion": "Robert, luego sus «hijos» Joffrey y Tommen, y por fin la propia Cersei."
+  },
+  {
+   "id": "ordena-03",
+   "capitulo": "essos",
+   "tipo": "ordena",
+   "dificultad": "maestre",
+   "pregunta": "Ordena las ciudades por las que pasa Daenerys, de la primera a la última.",
+   "items": [
+    "Qarth",
+    "Astapor",
+    "Yunkai",
+    "Meereen"
+   ],
+   "explicacion": "Qarth en la segunda temporada; Astapor y Yunkai en la tercera; Meereen desde la cuarta."
+  },
+  {
+   "id": "empareja-01",
+   "capitulo": "actores",
+   "tipo": "empareja",
+   "dificultad": "escudero",
+   "pregunta": "Une cada actor con su personaje.",
+   "parejas": [
+    [
+     "Peter Dinklage",
+     "Tyrion Lannister"
+    ],
+    [
+     "Emilia Clarke",
+     "Daenerys Targaryen"
+    ],
+    [
+     "Kit Harington",
+     "Jon Nieve"
+    ],
+    [
+     "Lena Headey",
+     "Cersei Lannister"
+    ]
+   ]
+  },
+  {
+   "id": "empareja-02",
+   "capitulo": "casas",
+   "tipo": "empareja",
+   "dificultad": "caballero",
+   "pregunta": "Une cada Casa con su lema.",
+   "parejas": [
+    [
+     "Stark",
+     "Se acerca el invierno"
+    ],
+    [
+     "Baratheon",
+     "Nuestra es la furia"
+    ],
+    [
+     "Tyrell",
+     "Crecer fuerte"
+    ],
+    [
+     "Greyjoy",
+     "Nosotros no sembramos"
+    ]
+   ]
+  },
+  {
+   "id": "empareja-03",
+   "capitulo": "norte",
+   "tipo": "empareja",
+   "dificultad": "caballero",
+   "pregunta": "Une cada lobo huargo con su dueño.",
+   "parejas": [
+    [
+     "Fantasma",
+     "Jon Nieve"
+    ],
+    [
+     "Nymeria",
+     "Arya"
+    ],
+    [
+     "Verano",
+     "Bran"
+    ],
+    [
+     "Viento Gris",
+     "Robb"
+    ]
+   ]
+  },
+  {
+   "id": "emojis-01",
+   "capitulo": "batallas",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué acontecimiento resumen estos emojis?",
+   "emojis": "💒 🎻 🩸",
+   "opciones": [
+    "La Boda Púrpura",
+    "La Boda Roja",
+    "La Batalla del Aguasnegras",
+    "La boda de Sansa y Tyrion"
+   ],
+   "correcta": 1,
+   "explicacion": "Cuando suenan «Las lluvias de Castamere» en una boda, mal asunto."
+  },
+  {
+   "id": "emojis-02",
+   "capitulo": "desembarco",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué acontecimiento resumen estos emojis?",
+   "emojis": "👑 🍷 🤢",
+   "opciones": [
+    "La Boda Púrpura",
+    "La caminata de Cersei",
+    "La coronación de Tommen",
+    "El juicio de Tyrion"
+   ],
+   "correcta": 0,
+   "explicacion": "Joffrey, el vino envenenado y la cara morada."
+  },
+  {
+   "id": "emojis-03",
+   "capitulo": "norte",
+   "tipo": "emojis",
+   "dificultad": "caballero",
+   "pregunta": "¿A qué hermandad se refieren estos emojis?",
+   "emojis": "🧱 ❄️ 🐦‍⬛ 🖤",
+   "opciones": [
+    "La Guardia de la Noche",
+    "La Guardia Real",
+    "Los Inmaculados",
+    "Los Hombres sin Rostro"
+   ],
+   "correcta": 0,
+   "explicacion": "El Muro, el frío, los cuervos y el negro."
+  },
+  {
+   "id": "emojis-04",
+   "capitulo": "essos",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién es?",
+   "emojis": "👩‍🦳 🐉🐉🐉 🔥 ⛓️‍💥",
+   "opciones": [
+    "Ygritte",
+    "Melisandre",
+    "Cersei Lannister",
+    "Daenerys Targaryen"
+   ],
+   "correcta": 3,
+   "explicacion": "Madre de dragones, rompedora de cadenas."
+  },
+  {
+   "id": "cuervo-01",
+   "capitulo": "casas",
+   "tipo": "cuervo",
+   "dificultad": "caballero",
+   "pregunta": "Un cuervo con la mitad de una clave ha llegado a vuestra cámara. La otra mitad está en otra Casa. Hablad con ellos y juntad las dos.",
+   "pista": "La clave entera tiene 8 letras: primero vuestra mitad, después la suya.",
+   "explicacion": "Las Casas que se hablan sobreviven al invierno."
+  },
+  {
+   "id": "cuervo-02",
+   "capitulo": "casas",
+   "tipo": "cuervo",
+   "dificultad": "caballero",
+   "pregunta": "Otro cuervo, otra clave partida. Esta vez llamad en vez de escribir.",
+   "pista": "La clave entera tiene 8 letras: primero vuestra mitad, después la suya."
+  },
+  {
+   "id": "foto-01",
+   "capitulo": "rodaje",
+   "tipo": "foto",
+   "dificultad": "caballero",
+   "pregunta": "En la serie, en este palacio vive una gran Casa de Poniente. ¿Cuál?",
+   "imagen": "retos/viaje-09.jpg",
+   "opciones": [
+    "Los Martell",
+    "Los Tyrell",
+    "Los Lannister",
+    "Los Arryn"
+   ],
+   "correcta": 0,
+   "explicacion": "Es el Patio de las Doncellas del Real Alcázar de Sevilla: en la serie, los Jardines del Agua de Dorne, donde viven los Martell."
+  },
+  {
+   "id": "foto-02",
+   "capitulo": "rodaje",
+   "tipo": "foto",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué ciudad de Poniente es esta?",
+   "imagen": "retos/viaje-01.jpg",
+   "opciones": [
+    "Desembarco del Rey",
+    "Antigua",
+    "Lanza del Sol",
+    "Puerto Blanco"
+   ],
+   "correcta": 0,
+   "explicacion": "Es Dubrovnik, en Croacia: sus murallas y tejados rojos fueron Desembarco del Rey durante casi toda la serie."
+  },
+  {
+   "id": "cifras-01",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "escudero",
+   "pregunta": "¿En qué temporada llega la Boda Roja?",
+   "min": 1,
+   "max": 8,
+   "paso": 1,
+   "correcta": 3,
+   "explicacion": "Temporada 3, episodio 9: «Las lluvias de Castamere»."
+  },
+  {
+   "id": "cifras-02",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuántos caballeros forman la Guardia Real?",
+   "min": 1,
+   "max": 20,
+   "paso": 1,
+   "correcta": 7,
+   "explicacion": "Siete espadas blancas para proteger al rey."
+  },
+  {
+   "id": "cifras-03",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuántos episodios tiene la última temporada?",
+   "min": 1,
+   "max": 12,
+   "paso": 1,
+   "correcta": 6,
+   "explicacion": "La octava temporada solo tuvo seis episodios… y dio que hablar."
+  },
+  {
+   "id": "cifras-04",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué año se estrenó la serie?",
+   "min": 2000,
+   "max": 2020,
+   "paso": 1,
+   "correcta": 2011,
+   "explicacion": "El primer episodio se emitió en abril de 2011."
+  },
+  {
+   "id": "cifras-05",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuántos episodios tiene cada una de las seis primeras temporadas?",
+   "min": 4,
+   "max": 20,
+   "paso": 1,
+   "correcta": 10,
+   "explicacion": "Diez por temporada hasta la sexta; luego, siete y seis."
+  },
+  {
+   "id": "cifras-06",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuántos Inmaculados compra Daenerys en Astapor?",
+   "min": 1000,
+   "max": 20000,
+   "paso": 500,
+   "correcta": 8000,
+   "explicacion": "Ocho mil Inmaculados… pagados con un dragón que no pensaba entregar."
+  },
+  {
+   "id": "cifras-07",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "maestre",
+   "pregunta": "¿Cuántos episodios tiene la serie en total?",
+   "min": 30,
+   "max": 150,
+   "paso": 1,
+   "correcta": 73,
+   "explicacion": "Setenta y tres episodios en ocho temporadas."
+  },
+  {
+   "id": "cifras-08",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "maestre",
+   "pregunta": "¿Cuántos premios Emmy ganó la serie?",
+   "min": 5,
+   "max": 100,
+   "paso": 1,
+   "margen": 3,
+   "correcta": 59,
+   "explicacion": "Cincuenta y nueve: el récord de una serie dramática."
+  },
+  {
+   "id": "cifras-09",
+   "capitulo": "cifras",
+   "tipo": "numero",
+   "dificultad": "maestre",
+   "pregunta": "Según la leyenda, ¿con cuántas espadas se forjó el Trono de Hierro?",
+   "min": 100,
+   "max": 3000,
+   "paso": 100,
+   "correcta": 1000,
+   "explicacion": "Mil espadas de los enemigos de Aegon, fundidas con fuego de dragón."
+  },
+  {
+   "id": "viaje-01",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "escudero",
+   "imagen": "retos/viaje-01.jpg",
+   "pregunta": "¿Dónde está esta ciudad? Tócala en el mapa.",
+   "punto": [
+    177,
+    366
+   ],
+   "radio": 20,
+   "explicacion": "Desembarco del Rey, con la Fortaleza Roja y el Gran Septo de Baelor."
+  },
+  {
+   "id": "viaje-02",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "escudero",
+   "imagen": "retos/viaje-02.jpg",
+   "pregunta": "¿Dónde está esta puerta helada? Tócala en el mapa.",
+   "punto": [
+    170,
+    102
+   ],
+   "radio": 26,
+   "explicacion": "Castillo Negro, la sede de la Guardia de la Noche, al pie del Muro."
+  },
+  {
+   "id": "viaje-03",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "maestre",
+   "imagen": "retos/viaje-03.jpg",
+   "pregunta": "¿Dónde está esta montaña? Tócala en el mapa.",
+   "punto": [
+    185,
+    62
+   ],
+   "radio": 38,
+   "explicacion": "Punta de Flecha, más allá del Muro: allí cazaron al espectro para llevarlo a Desembarco."
+  },
+  {
+   "id": "viaje-04",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "escudero",
+   "imagen": "retos/viaje-04.jpg",
+   "pregunta": "¿Dónde está este castillo de dragones de piedra? Tócalo en el mapa.",
+   "punto": [
+    250,
+    320
+   ],
+   "radio": 24,
+   "explicacion": "Rocadragón, la isla de los Targaryen, frente a la bahía del Aguasnegras."
+  },
+  {
+   "id": "viaje-05",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "imagen": "retos/viaje-05.jpg",
+   "pregunta": "¿Dónde está esta fortaleza sobre el mar? Tócala en el mapa.",
+   "punto": [
+    50,
+    296
+   ],
+   "radio": 30,
+   "explicacion": "Pyke, en las Islas del Hierro: la casa de los Greyjoy."
+  },
+  {
+   "id": "viaje-06",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "imagen": "retos/viaje-06.jpg",
+   "pregunta": "¿Dónde está este castillo de las montañas? Tócalo en el mapa.",
+   "punto": [
+    214,
+    290
+   ],
+   "radio": 24,
+   "explicacion": "El Nido de Águilas, en el Valle de Arryn, con su famosa Puerta de la Luna."
+  },
+  {
+   "id": "viaje-07",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "maestre",
+   "imagen": "retos/viaje-07.jpg",
+   "pregunta": "¿Dónde está este castillo entre dos ríos? Tócalo en el mapa.",
+   "punto": [
+    129,
+    300
+   ],
+   "radio": 18,
+   "explicacion": "Aguasdulces, la casa de los Tully, donde se juntan el Piedra Caída y el Forca Roja."
+  },
+  {
+   "id": "viaje-08",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "imagen": "retos/viaje-08.jpg",
+   "pregunta": "¿Dónde están estos jardines? Tócalos en el mapa.",
+   "punto": [
+    110,
+    420
+   ],
+   "radio": 28,
+   "explicacion": "Altojardín, la casa de los Tyrell, en el Dominio."
+  },
+  {
+   "id": "viaje-09",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "imagen": "retos/viaje-09.jpg",
+   "pregunta": "¿Dónde están estos jardines con fuentes? Tócalos en el mapa.",
+   "punto": [
+    214,
+    466
+   ],
+   "radio": 24,
+   "explicacion": "Los Jardines del Agua, el palacio de los Martell en Dorne, junto a Lanza del Sol."
+  },
+  {
+   "id": "viaje-10",
+   "capitulo": "viaje",
+   "tipo": "mapa",
+   "dificultad": "maestre",
+   "imagen": "retos/viaje-10.jpg",
+   "pregunta": "¿Dónde están estas torres en ruinas? Tócalas en el mapa.",
+   "punto": [
+    150,
+    338
+   ],
+   "radio": 18,
+   "explicacion": "Harrenhal, el castillo que Aegon quemó con sus dragones, junto al Ojo de Dioses."
+  },
+  {
+   "id": "viaje-11",
+   "capitulo": "viaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "imagen": "retos/viaje-11.jpg",
+   "pregunta": "¿Dónde estamos?",
+   "opciones": [
+    "Astapor",
+    "Yunkai",
+    "Meereen",
+    "Qarth"
+   ],
+   "correcta": 0,
+   "explicacion": "Astapor, la Ciudad Roja, donde Daenerys compró a los Inmaculados."
+  },
+  {
+   "id": "viaje-12",
+   "capitulo": "viaje",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "imagen": "retos/viaje-12.jpg",
+   "pregunta": "¿Dónde estamos?",
+   "opciones": [
+    "Volantis",
+    "Astapor",
+    "Yunkai",
+    "Meereen"
+   ],
+   "correcta": 2,
+   "explicacion": "Yunkai, la Ciudad Amarilla, con sus pirámides de adobe."
+  },
+  {
+   "id": "viaje-13",
+   "capitulo": "viaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "imagen": "retos/viaje-13.jpg",
+   "pregunta": "¿Dónde estamos?",
+   "opciones": [
+    "Meereen",
+    "Astapor",
+    "Qarth",
+    "Yunkai"
+   ],
+   "correcta": 0,
+   "explicacion": "Meereen, con la Gran Pirámide y la arpía dorada en lo alto."
+  },
+  {
+   "id": "antorcha-01",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "escudero",
+   "imagen": "retos/antorcha-mamuts.jpg",
+   "pregunta": "Más allá del Muro, de noche. Encuentra los mamuts de los salvajes.",
+   "punto": [
+    76.0,
+    44.5
+   ],
+   "radio": 6.5,
+   "explicacion": "Tormund y los suyos, en marcha hacia el Muro."
+  },
+  {
+   "id": "antorcha-02",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "escudero",
+   "imagen": "retos/antorcha-septo.jpg",
+   "pregunta": "Desembarco del Rey, de noche. Encuentra la cúpula del Gran Septo.",
+   "punto": [
+    78.5,
+    26.0
+   ],
+   "radio": 6.5,
+   "explicacion": "El Gran Septo de Baelor… hasta que Cersei lo voló con fuego valyrio."
+  },
+  {
+   "id": "antorcha-03",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "escudero",
+   "imagen": "retos/antorcha-harrenhal.jpg",
+   "pregunta": "Harrenhal, de noche. Encuentra el estandarte del león.",
+   "punto": [
+    16.0,
+    63.0
+   ],
+   "radio": 7,
+   "explicacion": "Los Lannister también pasaron por Harrenhal: Tywin la usó de cuartel."
+  },
+  {
+   "id": "antorcha-04",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "caballero",
+   "imagen": "retos/antorcha-cabana.jpg",
+   "pregunta": "Al pie del Muro, de noche. Encuentra la antorcha encendida.",
+   "punto": [
+    48.7,
+    75.5
+   ],
+   "radio": 5.5,
+   "explicacion": "Una antorcha buscando otra antorcha: ¡qué cosas!"
+  },
+  {
+   "id": "antorcha-05",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "caballero",
+   "imagen": "retos/antorcha-patio.jpg",
+   "pregunta": "El patio de Castillo Negro, de noche. Encuentra el armero con las espadas.",
+   "punto": [
+    47.0,
+    74.5
+   ],
+   "radio": 5.5,
+   "explicacion": "Ahí entrenaban Jon y Sam con Ser Alliser gritando."
+  },
+  {
+   "id": "antorcha-06",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "caballero",
+   "imagen": "retos/antorcha-palmera.jpg",
+   "pregunta": "Astapor, de noche. Encuentra la palmera.",
+   "punto": [
+    72.8,
+    62.0
+   ],
+   "radio": 6,
+   "explicacion": "La única sombra de la Ciudad Roja."
+  },
+  {
+   "id": "antorcha-07",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "maestre",
+   "imagen": "retos/antorcha-playa.jpg",
+   "pregunta": "La playa de Rocadragón, de noche. Encuentra el yelmo abandonado en la arena.",
+   "punto": [
+    66.4,
+    82.4
+   ],
+   "radio": 5,
+   "explicacion": "Alguien perdió la cabeza… o solo el yelmo."
+  },
+  {
+   "id": "antorcha-08",
+   "capitulo": "antorcha",
+   "tipo": "antorcha",
+   "dificultad": "maestre",
+   "imagen": "retos/antorcha-bosque.jpg",
+   "pregunta": "Un bosque más allá del Muro, de noche. Encuentra la piedra redonda medio enterrada en la nieve.",
+   "punto": [
+    90.5,
+    90.5
+   ],
+   "radio": 5,
+   "explicacion": "Ni Caminantes ni espectros: solo una piedra."
+  },
+  {
+   "id": "frases-01",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "Según el dicho de la familia, ¿qué hace siempre un Lannister?",
+   "opciones": [
+    "Pagar sus deudas",
+    "Ganar sus batallas",
+    "Cumplir su palabra",
+    "Beber el mejor vino"
+   ],
+   "correcta": 0,
+   "explicacion": "«Un Lannister siempre paga sus deudas»: lo dicen tanto que acaba siendo más famoso que su lema."
+  },
+  {
+   "id": "frases-02",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién le dice a Ned Stark «Cuando juegas al juego de tronos, ganas o mueres»?",
+   "opciones": [
+    "Cersei Lannister",
+    "Meñique",
+    "Varys",
+    "Robert Baratheon"
+   ],
+   "correcta": 0,
+   "explicacion": "Se lo suelta Cersei en el jardín, en la primera temporada. Ned no le hizo caso."
+  },
+  {
+   "id": "frases-03",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué personaje resume su vida con «Bebo y sé cosas»?",
+   "opciones": [
+    "Tyrion Lannister",
+    "Bronn",
+    "Robert Baratheon",
+    "Tormund"
+   ],
+   "correcta": 0,
+   "explicacion": "Tyrion, en Meereen. Y lo cumple a rajatabla."
+  },
+  {
+   "id": "frases-04",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién habla siempre de sí mismo diciendo «un hombre»?",
+   "opciones": [
+    "Jaqen H'ghar",
+    "Syrio Forel",
+    "Hodor",
+    "El Perro"
+   ],
+   "correcta": 0,
+   "explicacion": "«Un hombre no tiene nombre». Arya acabó hablando igual."
+  },
+  {
+   "id": "frases-05",
+   "capitulo": "frases",
+   "tipo": "emojis",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué frase se esconde detrás de estos emojis?",
+   "emojis": "🚪 ✋ 😭",
+   "opciones": [
+    "«Hold the door» (¡sujeta la puerta!), el origen del nombre de Hodor",
+    "«Winter is coming», el lema de los Stark",
+    "«Shame», la caminata de Cersei",
+    "«Dracarys», la orden a los dragones"
+   ],
+   "correcta": 0,
+   "explicacion": "De «Hold the door» a «Hodor». El episodio que hizo llorar a medio mundo."
+  },
+  {
+   "id": "frases-06",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "«Las cosas que hago por amor». ¿Qué hace Jaime Lannister justo después de decirlo?",
+   "opciones": [
+    "Empuja a Bran por la ventana de la torre",
+    "Mata al Rey Loco",
+    "Libera a Tyrion de la celda",
+    "Le regala una espada a Brienne"
+   ],
+   "correcta": 0,
+   "explicacion": "Primer episodio, Invernalia. Así empezó todo."
+  },
+  {
+   "id": "frases-07",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "«Nunca olvides lo que eres; el resto del mundo no lo hará». ¿A quién se lo dice Tyrion?",
+   "opciones": [
+    "A Jon Nieve",
+    "A Sansa Stark",
+    "A Podrick",
+    "A Bran Stark"
+   ],
+   "correcta": 0,
+   "explicacion": "En Invernalia, en el primer episodio, hablando de ser bastardo."
+  },
+  {
+   "id": "frases-08",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué repite Arya Stark cada noche antes de dormir?",
+   "opciones": [
+    "Una lista de nombres",
+    "El juramento de la Guardia",
+    "Una oración a los dioses antiguos",
+    "Las lecciones de Syrio"
+   ],
+   "correcta": 0,
+   "explicacion": "La lista de la gente que quiere ver muerta. Y la va tachando."
+  },
+  {
+   "id": "frases-09",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "«¿Qué le decimos al dios de la muerte? Hoy no». ¿Quién se lo enseña a Arya?",
+   "opciones": [
+    "Syrio Forel",
+    "El Perro",
+    "Jaqen H'ghar",
+    "Jon Nieve"
+   ],
+   "correcta": 0,
+   "explicacion": "Su maestro de esgrima braavosi, en la primera temporada."
+  },
+  {
+   "id": "frases-10",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién repite que «la noche es oscura y alberga horrores»?",
+   "opciones": [
+    "Melisandre",
+    "La Vieja Tata",
+    "Bran Stark",
+    "Davos Seaworth"
+   ],
+   "correcta": 0,
+   "explicacion": "La sacerdotisa roja, en nombre del Señor de la Luz."
+  },
+  {
+   "id": "frases-11",
+   "capitulo": "frases",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué le dice Roose Bolton a Robb Stark en la Boda Roja mientras lo apuñala?",
+   "opciones": [
+    "«Los Lannister te envían saludos»",
+    "«El Norte recuerda»",
+    "«Valar morghulis»",
+    "«Un Lannister siempre paga sus deudas»"
+   ],
+   "correcta": 0,
+   "explicacion": "La frase con la que se cerró la peor boda de la historia."
+  },
+  {
+   "id": "frases-12",
+   "capitulo": "frases",
+   "tipo": "empareja",
+   "dificultad": "maestre",
+   "pregunta": "Une cada frase con quien la dijo.",
+   "parejas": [
+    [
+     "«Yo elijo la violencia»",
+     "Cersei"
+    ],
+    [
+     "«Una chica no tiene nombre»",
+     "Arya"
+    ],
+    [
+     "«Dioses, qué fuerte era entonces»",
+     "Robert"
+    ],
+    [
+     "«Y ahora mi guardia ha terminado»",
+     "Jon Nieve"
+    ]
+   ],
+   "explicacion": "Cersei plantando cara a la Fe Militante, Arya en Braavos, Robert recordando sus batallas y Jon al dejar la Guardia."
+  },
+  {
+   "id": "dragones-01",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En honor a quién llama Daenerys a su dragón Rhaegal?",
+   "opciones": [
+    "A su hermano mayor Rhaegar",
+    "A su padre, el Rey Loco",
+    "A su abuelo",
+    "A un dios valyrio"
+   ],
+   "correcta": 0,
+   "explicacion": "Rhaegar, el hermano al que nunca conoció."
+  },
+  {
+   "id": "dragones-02",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Y a Viserion?",
+   "opciones": [
+    "A su hermano Viserys",
+    "A su madre",
+    "A Ser Barristan",
+    "Al primer rey Targaryen"
+   ],
+   "correcta": 0,
+   "explicacion": "Sí, al mismo hermano que la vendió a los dothrakis."
+  },
+  {
+   "id": "dragones-03",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Y a Drogon?",
+   "opciones": [
+    "A su esposo, Khal Drogo",
+    "A un dragón antiguo",
+    "A su caballo",
+    "A la ciudad de Dragonera"
+   ],
+   "correcta": 0,
+   "explicacion": "Para el más grande y fiero, el nombre de su sol y estrellas."
+  },
+  {
+   "id": "dragones-04",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Cómo nacen los dragones de Daenerys?",
+   "opciones": [
+    "En la pira funeraria de Khal Drogo",
+    "En un volcán de Valyria",
+    "En la Casa de los Eternos",
+    "En Rocadragón"
+   ],
+   "correcta": 0,
+   "explicacion": "Daenerys entra en el fuego con los tres huevos y sale con tres crías."
+  },
+  {
+   "id": "dragones-05",
+   "capitulo": "dragones",
+   "tipo": "numero",
+   "dificultad": "escudero",
+   "pregunta": "¿Cuántos huevos de dragón recibe Daenerys como regalo de boda?",
+   "min": 1,
+   "max": 10,
+   "correcta": 3,
+   "explicacion": "Tres huevos petrificados, regalo de Illyrio Mopatis."
+  },
+  {
+   "id": "dragones-06",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Dónde encierra Daenerys a dos de sus dragones en Meereen?",
+   "opciones": [
+    "En las catacumbas bajo la Gran Pirámide",
+    "En el foso de Daznak",
+    "En el puerto",
+    "En una isla del río"
+   ],
+   "correcta": 0,
+   "explicacion": "Encadena a Rhaegal y Viserion después de que Drogon matara a un niño."
+  },
+  {
+   "id": "dragones-07",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué dragón monta Jon Nieve?",
+   "opciones": [
+    "Rhaegal",
+    "Drogon",
+    "Viserion",
+    "Balerion"
+   ],
+   "correcta": 0,
+   "explicacion": "Rhaegal, el que lleva el nombre de su verdadero padre."
+  },
+  {
+   "id": "dragones-08",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿En qué se convierte Viserion después de morir?",
+   "opciones": [
+    "En un dragón de hielo al servicio del Rey de la Noche",
+    "En una estatua de piedra",
+    "En una sombra",
+    "En nada: lo entierran en Rocadragón"
+   ],
+   "correcta": 0,
+   "explicacion": "Con los ojos azules y fuego azul."
+  },
+  {
+   "id": "dragones-09",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué destruye el Viserion de hielo en el final de la séptima temporada?",
+   "opciones": [
+    "Un tramo del Muro",
+    "El Gran Septo",
+    "Las puertas de Invernalia",
+    "La flota de Euron"
+   ],
+   "correcta": 0,
+   "explicacion": "En Guardiaoriente del Mar. El ejército de los muertos entra en Poniente."
+  },
+  {
+   "id": "dragones-10",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Cómo se llamaba el dragón de Aegon el Conquistador, cuyo cráneo guardan en la Fortaleza Roja?",
+   "opciones": [
+    "Balerion, el Terror Negro",
+    "Vhagar",
+    "Caraxes",
+    "Meraxes"
+   ],
+   "correcta": 0,
+   "explicacion": "El más grande de todos. Su cráneo sale en los sótanos de la Fortaleza Roja."
+  },
+  {
+   "id": "dragones-11",
+   "capitulo": "dragones",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué momento cuentan estos emojis?",
+   "emojis": "🥚 🥚 🥚 🔥 👩",
+   "opciones": [
+    "El nacimiento de los dragones",
+    "La quema de Desembarco del Rey",
+    "La boda de Daenerys",
+    "El juicio de Mirri Maz Duur"
+   ],
+   "correcta": 0,
+   "explicacion": "Final de la primera temporada: la Madre de Dragones."
+  },
+  {
+   "id": "dragones-12",
+   "capitulo": "dragones",
+   "tipo": "ordena",
+   "dificultad": "maestre",
+   "pregunta": "Ordena estos momentos de los dragones, del primero al último.",
+   "items": [
+    "Nacen en la pira de Khal Drogo",
+    "Drogon saca a Daenerys del foso de Daznak",
+    "Viserion muere más allá del Muro",
+    "Euron derriba a Rhaegal con sus escorpiones"
+   ],
+   "explicacion": "Temporadas 1, 5, 7 y 8."
+  },
+  {
+   "id": "dragones-13",
+   "capitulo": "dragones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál de los tres dragones de Daenerys sigue vivo al final de la serie?",
+   "opciones": [
+    "Drogon",
+    "Rhaegal",
+    "Viserion",
+    "Ninguno"
+   ],
+   "correcta": 0,
+   "explicacion": "Drogon, el único que sobrevive. Se va volando hacia el este."
+  },
+  {
+   "id": "traiciones-01",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién mata a Tywin Lannister, y dónde?",
+   "opciones": [
+    "Tyrion, con una ballesta, en el retrete",
+    "Jaime, en el salón del trono",
+    "Cersei, con veneno, en su cama",
+    "Varys, en las mazmorras"
+   ],
+   "correcta": 0,
+   "explicacion": "Tyrion escapa de la celda y le dispara sentado en el retrete."
+  },
+  {
+   "id": "traiciones-02",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quiénes apuñalan a Jon Nieve al final de la quinta temporada?",
+   "opciones": [
+    "Sus propios hermanos de la Guardia de la Noche",
+    "Los hombres de Ramsay Bolton",
+    "Los salvajes",
+    "Los Caminantes Blancos"
+   ],
+   "correcta": 0,
+   "explicacion": "Un motín encabezado por Ser Alliser Thorne, al grito de «Por la Guardia»."
+  },
+  {
+   "id": "traiciones-03",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué hace Stannis Baratheon con su hija Shireen?",
+   "opciones": [
+    "La sacrifica en la hoguera",
+    "La envía a Braavos",
+    "La casa con un Frey",
+    "La nombra heredera"
+   ],
+   "correcta": 0,
+   "explicacion": "Por consejo de Melisandre. La escena más dura de la quinta temporada."
+  },
+  {
+   "id": "traiciones-04",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo muere Olenna Tyrell?",
+   "opciones": [
+    "Bebe el veneno que le ofrece Jaime",
+    "La quema Cersei en el Septo",
+    "Se cae de una torre",
+    "La mata Euron Greyjoy"
+   ],
+   "correcta": 0,
+   "explicacion": "Jaime le da a elegir una muerte dulce. Y ella aprovecha para decirle una última cosa que le duele mucho."
+  },
+  {
+   "id": "traiciones-05",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién ordena cortarle la cabeza a Ned Stark?",
+   "opciones": [
+    "Joffrey",
+    "Cersei",
+    "Tywin",
+    "Meñique"
+   ],
+   "correcta": 0,
+   "explicacion": "Contra el consejo de su madre y de todos."
+  },
+  {
+   "id": "traiciones-06",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo mueren Cersei y Jaime?",
+   "opciones": [
+    "Aplastados bajo la Fortaleza Roja",
+    "Quemados por Drogon en el salón del trono",
+    "Ahogados en la bahía",
+    "Ejecutados por Daenerys"
+   ],
+   "correcta": 0,
+   "explicacion": "Abrazados, en los sótanos, mientras la ciudad arde."
+  },
+  {
+   "id": "traiciones-07",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo muere Khal Drogo?",
+   "opciones": [
+    "Daenerys lo asfixia con una almohada",
+    "En combate contra Ser Jorah",
+    "Cayendo del caballo",
+    "Lo mata Viserys"
+   ],
+   "correcta": 0,
+   "explicacion": "La herida se le pudre, Mirri Maz Duur lo deja sin alma y Daenerys le da paz."
+  },
+  {
+   "id": "traiciones-08",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Quién mata a Ygritte?",
+   "opciones": [
+    "Olly, con una flecha",
+    "Jon Nieve",
+    "Tormund",
+    "Un Caminante Blanco"
+   ],
+   "correcta": 0,
+   "explicacion": "En el ataque al Castillo Negro. Jon nunca se lo perdonó a Olly."
+  },
+  {
+   "id": "traiciones-09",
+   "capitulo": "traiciones",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "pregunta": "¿Qué rey muere así?",
+   "emojis": "🐗 🍷 👑",
+   "opciones": [
+    "Robert Baratheon",
+    "Joffrey Baratheon",
+    "Aerys, el Rey Loco",
+    "Renly Baratheon"
+   ],
+   "correcta": 0,
+   "explicacion": "Un jabalí en una cacería… con mucho vino de por medio, cortesía de Cersei."
+  },
+  {
+   "id": "traiciones-10",
+   "capitulo": "traiciones",
+   "tipo": "empareja",
+   "dificultad": "maestre",
+   "pregunta": "Une a cada víctima con quien la mató.",
+   "parejas": [
+    [
+     "Shae",
+     "Tyrion"
+    ],
+    [
+     "Stannis",
+     "Brienne"
+    ],
+    [
+     "Meñique",
+     "Arya"
+    ],
+    [
+     "Oberyn",
+     "La Montaña"
+    ]
+   ],
+   "explicacion": "Tyrion la estranguló, Brienne cumplió su venganza, Arya ejecutó la orden de Sansa y la Montaña… mejor no recordarlo."
+  },
+  {
+   "id": "traiciones-11",
+   "capitulo": "traiciones",
+   "tipo": "ordena",
+   "dificultad": "maestre",
+   "pregunta": "Ordena estas muertes, de la primera a la última.",
+   "items": [
+    "Robert Baratheon",
+    "Khal Drogo",
+    "Tywin Lannister",
+    "Shireen Baratheon"
+   ],
+   "explicacion": "Temporadas 1 (Robert antes que Drogo), 4 y 5."
+  },
+  {
+   "id": "traiciones-12",
+   "capitulo": "traiciones",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Quién mata a Daenerys?",
+   "opciones": [
+    "Jon Nieve",
+    "Arya Stark",
+    "Tyrion Lannister",
+    "Gusano Gris"
+   ],
+   "correcta": 0,
+   "explicacion": "Con un puñal, en el salón del trono, después de la quema de Desembarco."
+  },
+  {
+   "id": "examen-01",
+   "capitulo": "examen",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuál es el verdadero nombre de Jon Nieve?",
+   "opciones": [
+    "Aegon Targaryen",
+    "Rhaegar Stark",
+    "Brandon Nieve",
+    "Daeron Targaryen"
+   ],
+   "correcta": 0,
+   "explicacion": "Hijo de Rhaegar Targaryen y Lyanna Stark. Ned lo crio como bastardo para protegerlo."
+  },
+  {
+   "id": "examen-02",
+   "capitulo": "examen",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué espada le regala Jaime a Brienne?",
+   "opciones": [
+    "Guardajuramentos",
+    "Lamento de Viuda",
+    "Hielo",
+    "Hermana Oscura"
+   ],
+   "correcta": 0,
+   "explicacion": "Forjada con el acero de Hielo, la espada de Ned."
+  },
+  {
+   "id": "examen-03",
+   "capitulo": "examen",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "pregunta": "¿Qué le da Jaime a Brienne la noche antes de la Batalla de Invernalia?",
+   "opciones": [
+    "La nombra caballero",
+    "Un anillo",
+    "Su armadura dorada",
+    "Una carta para Tarth"
+   ],
+   "correcta": 0,
+   "explicacion": "«Levantaos, Ser Brienne de Tarth»."
+  },
+  {
+   "id": "examen-04",
+   "capitulo": "examen",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "pregunta": "¿Quién es el verdadero padre de los hijos de Cersei?",
+   "opciones": [
+    "Jaime Lannister",
+    "Robert Baratheon",
+    "Lancel Lannister",
+    "Meñique"
+   ],
+   "correcta": 0,
+   "explicacion": "Lo descubrió Jon Arryn… y por eso murió."
+  },
+  {
+   "id": "examen-05",
+   "capitulo": "examen",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "pregunta": "¿Cómo se llama el hermano de Ned Stark que sirve en la Guardia de la Noche?",
+   "opciones": [
+    "Benjen Stark",
+    "Brandon Stark",
+    "Rickard Stark",
+    "Edmure Stark"
+   ],
+   "correcta": 0,
+   "explicacion": "El tío Benjen: desaparece más allá del Muro y vuelve medio muerto."
+  },
+  {
+   "id": "examen-06",
+   "capitulo": "examen",
+   "tipo": "numero",
+   "dificultad": "caballero",
+   "pregunta": "¿Cuántos hijos tienen Ned y Catelyn Stark?",
+   "min": 1,
+   "max": 12,
+   "correcta": 5,
+   "explicacion": "Robb, Sansa, Arya, Bran y Rickon. Jon no cuenta: no era hijo de Ned."
+  },
+  {
+   "id": "examen-07",
+   "capitulo": "examen",
+   "tipo": "empareja",
+   "dificultad": "maestre",
+   "pregunta": "Une cada espada con quien la llevaba.",
+   "parejas": [
+    [
+     "Aguja",
+     "Arya"
+    ],
+    [
+     "Hielo",
+     "Ned Stark"
+    ],
+    [
+     "Lamento de Viuda",
+     "Joffrey"
+    ],
+    [
+     "Garra",
+     "Jon Nieve"
+    ]
+   ],
+   "explicacion": "Aguja, de Jon a Arya; Hielo, la espada de Ned; Lamento de Viuda, el regalo de bodas de Tywin a Joffrey; Garra, de Jeor Mormont a Jon."
+  },
+  {
+   "id": "examen-08",
+   "capitulo": "examen",
+   "tipo": "ordena",
+   "dificultad": "maestre",
+   "pregunta": "Ordena a estas Manos del Rey, de la primera a la última.",
+   "items": [
+    "Jon Arryn",
+    "Ned Stark",
+    "Tyrion Lannister",
+    "Tywin Lannister"
+   ],
+   "explicacion": "Jon Arryn y Ned con Robert; Tyrion, provisional con Joffrey, hasta que llega su padre."
+  },
+  {
+   "id": "examen-09",
+   "capitulo": "examen",
+   "tipo": "mapa",
+   "dificultad": "caballero",
+   "pregunta": "Señala Antigua, la ciudad de la Ciudadela donde estudia Sam.",
+   "punto": [
+    65,
+    458
+   ],
+   "explicacion": "Al suroeste de Poniente, en la desembocadura del Hidromiel."
+  },
+  {
+   "id": "examen-10",
+   "capitulo": "examen",
+   "tipo": "mapa",
+   "dificultad": "maestre",
+   "pregunta": "Señala Roca Casterly, el hogar de los Lannister.",
+   "punto": [
+    76,
+    336
+   ],
+   "explicacion": "En la costa oeste, frente al Mar del Ocaso."
+  },
+  {
+   "id": "examen-11",
+   "capitulo": "examen",
+   "tipo": "emojis",
+   "dificultad": "caballero",
+   "pregunta": "¿Qué título acaba teniendo Sansa?",
+   "emojis": "🐺 👸 ❄️ 👑",
+   "opciones": [
+    "Reina en el Norte",
+    "Señora de Invernalia y nada más",
+    "Reina de los Siete Reinos",
+    "Guardiana del Oeste"
+   ],
+   "correcta": 0,
+   "explicacion": "El Norte se independiza y ella es su reina."
+  },
+  {
+   "id": "cuervo-03",
+   "capitulo": "examen",
+   "tipo": "cuervo",
+   "dificultad": "maestre",
+   "pregunta": "Último cuervo antes de Reyes: otra clave partida en dos. La otra mitad la tiene otra Casa.",
+   "pista": "Primero vuestra mitad, después la suya. Sin chivarse a nadie más."
+  },
+  {
+   "id": "sob-01",
+   "capitulo": "casas",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "sobremesa": true,
+   "pregunta": "¿Qué Casa tiene por escudo un ciervo coronado?",
+   "opciones": [
+    "Baratheon",
+    "Arryn",
+    "Stark",
+    "Tyrell"
+   ],
+   "correcta": 0,
+   "explicacion": "El ciervo negro sobre campo dorado de Bastión de Tormentas."
+  },
+  {
+   "id": "sob-02",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "sobremesa": true,
+   "pregunta": "¿Qué dice la Guardia de la Noche al terminar su juramento?",
+   "opciones": [
+    "«Aquí estamos»",
+    "«Soy la espada en la oscuridad»",
+    "«Valar morghulis»",
+    "«Se acerca el invierno»"
+   ],
+   "correcta": 1,
+   "explicacion": "«Soy la espada en la oscuridad, el vigilante del Muro…»"
+  },
+  {
+   "id": "sob-03",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Quién pronuncia «Caos no es un pozo. Caos es una escalera»?",
+   "opciones": [
+    "Cersei",
+    "Meñique",
+    "Tyrion",
+    "Varys"
+   ],
+   "correcta": 1,
+   "explicacion": "Meñique, a Varys, en la tercera temporada."
+  },
+  {
+   "id": "sob-04",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "sobremesa": true,
+   "pregunta": "¿Qué le ofrece Daenerys a los Inmaculados nada más comprarlos?",
+   "opciones": [
+    "Un dragón",
+    "Oro",
+    "Tierras en Poniente",
+    "La libertad"
+   ],
+   "correcta": 3,
+   "explicacion": "Los libera y les pide que luchen con ella como hombres libres."
+  },
+  {
+   "id": "sob-05",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Quién mata a Ramsay Bolton?",
+   "opciones": [
+    "Jon Nieve a puñetazos",
+    "Theon Greyjoy",
+    "Brienne de Tarth",
+    "Sus propios perros, por orden de Sansa"
+   ],
+   "correcta": 3,
+   "explicacion": "Jon lo deja vivo; Sansa lo encierra con sus perros hambrientos."
+  },
+  {
+   "id": "sob-06",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Qué actor interpreta a Ser Davos, el Caballero de la Cebolla?",
+   "opciones": [
+    "Liam Cunningham",
+    "Stephen Dillane",
+    "Iain Glen",
+    "Rory McCann"
+   ],
+   "correcta": 0,
+   "explicacion": "Liam Cunningham, irlandés."
+  },
+  {
+   "id": "sob-07",
+   "capitulo": "rodaje",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Qué ciudad española fue Desembarco del Rey en la última temporada, con su Catedral de fondo?",
+   "opciones": [
+    "Girona",
+    "Cáceres",
+    "Sevilla",
+    "Ninguna: fue Dubrovnik, en Croacia"
+   ],
+   "correcta": 3,
+   "explicacion": "Trampa: en la última temporada siguió siendo Dubrovnik, aunque Sevilla y Girona aparecieron en otras."
+  },
+  {
+   "id": "sob-08",
+   "capitulo": "desembarco",
+   "tipo": "emojis",
+   "dificultad": "escudero",
+   "sobremesa": true,
+   "pregunta": "¿Qué personaje es?",
+   "emojis": "🍷 📚 🧠 🤏",
+   "opciones": [
+    "Tyrion Lannister",
+    "Meñique",
+    "Samwell Tarly",
+    "Varys"
+   ],
+   "correcta": 0,
+   "explicacion": "«Bebo y sé cosas»."
+  },
+  {
+   "id": "sob-09",
+   "capitulo": "norte",
+   "tipo": "test",
+   "dificultad": "escudero",
+   "sobremesa": true,
+   "pregunta": "¿Cuántos lobos huargo encuentran los Stark al principio de la serie?",
+   "opciones": [
+    "Siete",
+    "Cinco",
+    "Seis",
+    "Cuatro"
+   ],
+   "correcta": 2,
+   "explicacion": "Cinco para los hijos legítimos y un albino para Jon."
+  },
+  {
+   "id": "sob-10",
+   "capitulo": "essos",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "sobremesa": true,
+   "pregunta": "¿Qué le regala Jaqen H'ghar a Arya cuando se despiden en Harrenhal?",
+   "opciones": [
+    "Un cuervo",
+    "Una cara",
+    "Una moneda de hierro",
+    "Una daga"
+   ],
+   "correcta": 2,
+   "explicacion": "La moneda de Braavos: «Valar morghulis»."
+  },
+  {
+   "id": "sob-11",
+   "capitulo": "batallas",
+   "tipo": "test",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Con qué arma mata Arya al Rey de la Noche?",
+   "opciones": [
+    "Una lanza de vidriagón",
+    "Aguja",
+    "Garra",
+    "Una daga de acero valyrio"
+   ],
+   "correcta": 3,
+   "explicacion": "La daga con la que intentaron matar a Bran en la primera temporada."
+  },
+  {
+   "id": "sob-12",
+   "capitulo": "actores",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "sobremesa": true,
+   "pregunta": "¿Qué dos actores de la serie se casaron entre ellos en la vida real?",
+   "opciones": [
+    "Sophie Turner y Maisie Williams",
+    "Lena Headey y Jerome Flynn",
+    "Kit Harington y Rose Leslie",
+    "Emilia Clarke y Jason Momoa"
+   ],
+   "correcta": 2,
+   "explicacion": "Jon e Ygritte. «Sí sabes algo, Jon Nieve»."
+  },
+  {
+   "id": "sob-13",
+   "capitulo": "casas",
+   "tipo": "emojis",
+   "dificultad": "caballero",
+   "sobremesa": true,
+   "pregunta": "¿Qué Casa es?",
+   "emojis": "🦑 ⚓ 🌊 💀",
+   "opciones": [
+    "Martell",
+    "Tully",
+    "Mormont",
+    "Greyjoy"
+   ],
+   "correcta": 3,
+   "explicacion": "Lo que está muerto no puede morir."
+  },
+  {
+   "id": "sob-15",
+   "capitulo": "desembarco",
+   "tipo": "test",
+   "dificultad": "maestre",
+   "sobremesa": true,
+   "pregunta": "ÚLTIMA · ¿Quién acaba sentado en el Trono de Hierro… o lo que queda de él, al final de la serie?",
+   "opciones": [
+    "Bran Stark",
+    "Sansa Stark",
+    "Nadie: Drogon lo funde",
+    "Jon Nieve"
+   ],
+   "correcta": 2,
+   "explicacion": "Drogon lo derrite. Bran es rey, pero sin trono."
+  }
+ ]
+}

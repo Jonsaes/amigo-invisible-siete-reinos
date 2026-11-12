@@ -1,0 +1,51 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Archivos del repositorio que NO deben verse en la web (retos.json lleva las respuestas).
+# La función reto.js sigue leyendo retos.json por dentro; esto solo cierra la descarga directa.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/pruebas/*"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/reglas-firebase.json"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/PROGRESS.md"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/DECISIONS.md"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/CLAUDE.md"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/LEEME.md"
+  to = "/no-existe"
+  status = 404
+  force = true
+[[redirects]]
+  from = "/README.md"
+  to = "/no-existe"
+  status = 404
+  force = true
