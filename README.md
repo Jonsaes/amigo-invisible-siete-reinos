@@ -12,6 +12,41 @@ descubre a quién le toca regalar. Además trae dos juegos opcionales para anima
 
 Nació para una familia de verdad en la Navidad de 2026 y funcionó tan bien que lo compartimos por si a alguien más le apetece.
 
+## Así se ve
+
+<table>
+<tr>
+<td align="center"><img src="docs/capturas/01_portada.jpg" width="200" alt="Portada con el mapa y los escudos de las Casas"><br><sub>El mapa con las Casas</sub></td>
+<td align="center"><img src="docs/capturas/02_deseos.jpg" width="200" alt="Lista de deseos"><br><sub>Tu lista de deseos</sub></td>
+<td align="center"><img src="docs/capturas/03_larga_noche.jpg" width="200" alt="La Larga Noche, capítulos de retos"><br><sub>La Larga Noche</sub></td>
+<td align="center"><img src="docs/capturas/07_maestre.jpg" width="200" alt="Sala del Maestre"><br><sub>La Sala del Maestre</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/capturas/04_antorcha.jpg" width="200" alt="Reto de la antorcha"><br><sub>Buscar a oscuras con una antorcha</sub></td>
+<td align="center"><img src="docs/capturas/05_viaje_mapa.jpg" width="200" alt="Reto de mapa con foto"><br><sub>¿Dónde está este castillo?</sub></td>
+<td align="center"><img src="docs/capturas/06_cifra.jpg" width="200" alt="Reto de adivinar la cifra"><br><sub>Adivina la cifra</sub></td>
+<td></td>
+</tr>
+</table>
+
+**La sobremesa, en la tele:**
+
+<table>
+<tr>
+<td align="center"><img src="docs/capturas/08_tele_intro_escudos.jpg" width="400" alt="Intro con los escudos y los puntos de salida"><br><sub>La intro presenta a las Casas</sub></td>
+<td align="center"><img src="docs/capturas/09_tele_intro_trono.jpg" width="400" alt="Título de la Batalla por el Trono"><br><sub>…y empieza la batalla</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/capturas/10_tele_pregunta.jpg" width="400" alt="Pregunta en la tele con el marcador"><br><sub>Preguntas con marcador en directo</sub></td>
+<td align="center"><img src="docs/capturas/11_tele_apuesta.jpg" width="400" alt="La apuesta final"><br><sub>La apuesta final</sub></td>
+</tr>
+<tr>
+<td align="center" colspan="2"><img src="docs/capturas/12_tele_final.jpg" width="400" alt="Ceremonia del Trono de Hierro"><br><sub>Y una Casa se sienta en el Trono</sub></td>
+</tr>
+</table>
+
+<sub>Capturas con datos inventados, en el modo de demostración de la propia web.</sub>
+
 > **Proyecto de fans, sin ánimo de lucro y no oficial.** *Juego de Tronos* y *Canción de hielo y fuego*, sus nombres,
 > personajes y lugares pertenecen a HBO y a George R. R. Martin. Este proyecto no tiene ninguna relación con ellos.
 > No incluye imágenes, música ni vídeos de la serie: los escudos, el mapa y la música los dibuja y compone la propia
@@ -63,6 +98,21 @@ Abre `index.html`. Al principio está el bloque de **configuración** (lo único
   un dibujo propio, así que funciona sin ninguna.
 
 Comparte el enlace de Netlify con la familia. La **Sala del Maestre** está en `tu-web/#/maestre`.
+
+### ¿La quieres más fiel a la serie?
+
+Lo que descargas es la edición «de la Guardia de la Noche»: austera, honrada y sin derechos de autor ajenos.
+Los escudos y el mapa los dibuja la propia página, la música la compone ella sola y las fotos de los retos las
+soñó una inteligencia artificial. Si en tu familia hay quien se sabe los lemas de las Casas menores y exige
+el Trono de Hierro de verdad, se puede dejar tan fiel como quieras:
+- imágenes en `img/` (nombres en el bloque `ARTE` de `index.html`): hogueras, trono, dragón, caminantes, corona…
+- escudos propios en `escudos/` con `imagen: "escudos/stark.png"` en cada Casa;
+- tu música en `musica/` (`JUEGO.musica` para el fondo y `musica/intro.mp3` para la intro de la sobremesa);
+- y fotos para los retos en `retos/`.
+
+Eso sí, lo que pongas corre de tu cuenta. Un Lannister siempre paga sus deudas… y los abogados de las
+productoras, siempre las cobran. Si lo publicas, usa material propio o con permiso; para el salón de casa,
+tú sabrás lo que le cuentas al Maestre.
 
 ## Cómo se juega
 

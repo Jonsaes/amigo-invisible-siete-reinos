@@ -2123,7 +2123,7 @@ function renderIntro(d, demoTag){
     <div class="sc" id="scB">${ok(ARTE.batalla)?`<img class="bg kb2" src="${esc(ARTE.batalla)}" data-art="${esc(ARTE.batalla)}" alt="">`:''}<div class="brasas"></div><div class="vig"></div>
       <div class="cap" data-t="22" data-h="30">Cinco Casas. Un solo trono.</div><div class="cap" data-t="31" data-h="38">Durante un mes han luchado en La Larga Noche.</div><div class="cap" data-t="38.5">Esta noche se decide todo.</div></div>
     <div class="sc" id="scE"><div class="hall"></div><div class="brasas"></div><div class="fila">${rk.map(x=>`<div class="esc">${shieldSvg(x.c,'on')}<div class="n">${esc(x.c.casa.replace('Casa ','').toUpperCase())}</div><div class="f">${esc(x.c.familia)}</div><div class="p"><small>SALEN CON</small>${(d.salida||{})[x.c.id]||0}</div></div>`).join('')}</div></div>
-    <div class="sc" id="scG">${ok(ARTE.tronoGrande)?`<img class="bg kb3" src="${esc(ARTE.tronoGrande)}" data-art="${esc(ARTE.tronoGrande)}" alt="">`:'<div class="hall"></div>'}<div class="vig"></div><div class="brasas"></div><div class="gran"><div class="k">EL AMIGO INVISIBLE DE PONIENTE PRESENTA</div><h1>LA BATALLA<br>POR EL TRONO</h1></div><div class="flash"></div></div>
+    <div class="sc" id="scG">${ok(ARTE.tronoGrande)?`<img class="bg kb3" src="${esc(ARTE.tronoGrande)}" data-art="${esc(ARTE.tronoGrande)}" alt="">`:'<div class="hall"></div>'}<div class="vig"></div><div class="brasas"></div><div class="gran"><div class="k">${esc(JUEGO.titulo.toUpperCase())} PRESENTA</div><h1>LA BATALLA<br>POR EL TRONO</h1></div><div class="flash"></div></div>
     ${demoTag?`<div class="demo-tag">${esc(demoTag)}</div>`:''}`;
   // música (archivo propio o, si no existe, nada: el tema de fondo se silencia igualmente)
   if (!audio.muted){
@@ -2294,7 +2294,7 @@ function renderDirectoMaestre(){
 const DEMO_Q = [
   {id:'d1', tipo:'test', pregunta:'¿Qué Casa tiene por escudo un ciervo coronado?', opciones:['Stark','Baratheon','Arryn','Tyrell'], correcta:1, explicacion:'El ciervo negro sobre campo dorado de Bastión de Tormentas.'},
   {id:'d2', tipo:'emojis', emojis:'💍🎻🩸', pregunta:'¿Qué acontecimiento resumen estos emojis?', opciones:['La Boda Púrpura','La batalla del Aguasnegras','La Boda Roja','La boda de Sansa y Tyrion'], correcta:2, explicacion:'Los Frey tocaron «Las lluvias de Castamere» y se acabó la boda.'},
-  {id:'d3', tipo:'foto', imagen:'retos/ejemplo-foto.jpg', pregunta:'¿Qué se ve en esta imagen, que se va aclarando?', opciones:['La Fortaleza Roja','El mapa de Poniente','Un plano de Braavos','El escudo de los Stark'], correcta:1, explicacion:'El mapa del juego, de Invernalia a Dorne.'},
+  {id:'d3', tipo:'foto', imagen:'retos/viaje-01.jpg', pregunta:'¿Qué ciudad aparece en esta imagen, que se va aclarando?', opciones:['Braavos','Desembarco del Rey','Antigua','Invernalia'], correcta:1, explicacion:'La capital de los Siete Reinos, junto a la bahía del Aguasnegras.'},
   {id:'d4', tipo:'silueta', imagen:'img/dragon.png', pregunta:'¿Qué criatura se esconde en la sombra?', opciones:['Un grifo','Un cuervo gigante','Un dragón','Un caballo alado'], correcta:2, explicacion:'Drogon, el mayor de los tres hijos de Daenerys.'},
   {id:'d5', tipo:'test', pregunta:'¿Cuál es el lema de la Casa Stark?', opciones:['Fuego y Sangre','Nuestra es la furia','Crecer fuerte','Se acerca el invierno'], correcta:3, explicacion:'Más que un lema es un aviso.'}
 ];
